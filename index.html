@@ -386,6 +386,37 @@
     .search-row .btn-search{padding:12px;}
   }
 
+  /* ── FIREBASE WARNING BANNER ───────────────────────────── */
+  .db-warning{
+    background:rgba(224,92,106,.08); border:1px solid rgba(224,92,106,.45);
+    border-radius:var(--radius); padding:18px 20px;
+    display:none; flex-direction:column; gap:10px;
+  }
+  .db-warning.show{display:flex;}
+  .db-warning .dw-title{
+    display:flex; align-items:center; gap:10px;
+    font-weight:600; font-size:13px; color:var(--danger);
+  }
+  .db-warning .dw-title svg{width:18px; height:18px; flex-shrink:0;}
+  .db-warning .dw-body{font-size:12px; color:var(--ink-dim); line-height:1.7;}
+  .db-warning .dw-body a{color:var(--teal); text-decoration:underline;}
+  .db-warning .dw-code{
+    background:var(--bg-deep); border:1px solid rgba(255,255,255,.08);
+    border-radius:6px; padding:12px 14px;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--teal);
+    white-space:pre; overflow-x:auto; line-height:1.7;
+  }
+  .db-warning .dw-steps{font-size:11.5px; color:var(--ink-dim); line-height:2; list-style:none; padding:0;}
+  .db-warning .dw-steps li::before{content:'→  '; color:var(--gold);}
+  .db-ok{
+    background:rgba(76,175,138,.07); border:1px solid rgba(76,175,138,.4);
+    border-radius:var(--radius); padding:12px 18px;
+    display:none; align-items:center; gap:10px;
+    font-size:12px; color:var(--success); font-family:'IBM Plex Mono',monospace;
+  }
+  .db-ok.show{display:flex;}
+  .db-ok svg{width:16px; height:16px; flex-shrink:0;}
+
   /* ── UTILS ──────────────────────────────────────────────── */
   .hidden{display:none !important;}
   .fade-in{animation:fadeIn .35s ease;}
@@ -472,6 +503,41 @@
         </svg>
         Host session active — only you can see and manage these certificates
         <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+
+      <!-- Firebase connectivity warning -->
+      <div class="db-warning" id="dbWarning">
+        <div class="dw-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Firebase database is blocking reads/writes — certificates are saving locally only!
+        </div>
+        <div class="dw-body">
+          Your Firebase Realtime Database security rules are locked. Certificates you upload are only saved in <strong>this browser</strong> and students cannot find them. Fix it by setting your rules to allow reads and writes:
+        </div>
+        <div class="dw-code">{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}</div>
+        <ul class="dw-steps">
+          <li>Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a></li>
+          <li>Select your project → Realtime Database → Rules tab</li>
+          <li>Replace the rules with the JSON above and click <strong>Publish</strong></li>
+          <li>Come back here and click <strong>Retry connection</strong> below</li>
+        </ul>
+        <div>
+          <button class="btn btn-teal" id="retryDbBtn" style="font-size:11px;padding:9px 16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Retry connection
+          </button>
+        </div>
+      </div>
+
+      <!-- Firebase OK indicator -->
+      <div class="db-ok" id="dbOk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Firebase database connected — certificates are saved to the cloud and searchable by students.
       </div>
 
       <!-- Stats -->
@@ -612,11 +678,25 @@
     el._t = setTimeout(()=>{ el.classList.remove('show'); }, 2600);
   }
 
-  // ── STORAGE (Cloud + LocalStorage fallback) ───────────────
+  // ── STORAGE ───────────────────────────────────────────────
+  // Tries Firebase first. If rules block the request (401/403) or network
+  // fails, throws so callers know — no silent localStorage fallback for writes.
+  let _firebaseOk = null; // null=untested, true=ok, false=blocked
+
+  async function _fbFetch(url, opts){
+    const res = await fetch(url, opts);
+    if(res.status === 401 || res.status === 403){
+      _firebaseOk = false;
+      throw new Error('Firebase permission denied (rules blocked). Status: ' + res.status);
+    }
+    _firebaseOk = true;
+    return res;
+  }
+
   const db = {
     async get(key){
       try {
-        const res = await fetch(`${FIREBASE_DB}/${key}.json`);
+        const res = await _fbFetch(`${FIREBASE_DB}/${key}.json`);
         if(res.ok){
           const data = await res.json();
           if(data !== null){
@@ -625,29 +705,65 @@
             return str;
           }
         }
-      } catch(e){ /* network error — fall through to local */ }
-      return localStorage.getItem(key);
+        return null;
+      } catch(e){
+        // Only fall back to localStorage if it's a network error, NOT a permissions error
+        if(e.message && e.message.includes('permission denied')){
+          throw e; // surface it
+        }
+        // Genuine network offline — fall back silently
+        return localStorage.getItem(key);
+      }
     },
     async set(key, val){
       const str = typeof val === 'string' ? val : JSON.stringify(val);
+      let payload;
+      try { payload = JSON.parse(str); } catch(_){ payload = str; }
+      // Always attempt Firebase first — throw on failure so host sees it
+      await _fbFetch(`${FIREBASE_DB}/${key}.json`, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      // Only update localStorage cache after successful cloud write
       try { localStorage.setItem(key, str); } catch(_){}
-      try {
-        let payload;
-        try { payload = JSON.parse(str); } catch(_){ payload = str; }
-        await fetch(`${FIREBASE_DB}/${key}.json`, {
-          method:'PUT',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(payload)
-        });
-      } catch(e){ console.warn('Cloud write failed, saved locally:', e); }
     },
     async del(key){
+      await _fbFetch(`${FIREBASE_DB}/${key}.json`, { method:'DELETE' });
       try { localStorage.removeItem(key); } catch(_){}
-      try {
-        await fetch(`${FIREBASE_DB}/${key}.json`, { method:'DELETE' });
-      } catch(e){ console.warn('Cloud delete failed:', e); }
     }
   };
+
+  // ── FIREBASE CONNECTIVITY CHECK ───────────────────────────
+  async function checkFirebase(){
+    const warn = $('dbWarning');
+    const ok   = $('dbOk');
+    warn.classList.remove('show');
+    ok.classList.remove('show');
+    try {
+      // Try a harmless read of a non-existent key — tests rules without side-effects
+      await _fbFetch(`${FIREBASE_DB}/__connection_test__.json`);
+      warn.classList.remove('show');
+      ok.classList.add('show');
+      return true;
+    } catch(e){
+      ok.classList.remove('show');
+      warn.classList.add('show');
+      return false;
+    }
+  }
+
+  $('retryDbBtn') && $('retryDbBtn').addEventListener('click', async () => {
+    $('retryDbBtn').textContent = 'Checking…';
+    const connected = await checkFirebase();
+    if(connected){
+      toast('Firebase connected! Reloading certificates…');
+      await loadDashboard();
+    } else {
+      toast('Still blocked — check your Firebase rules and try again.', 'err');
+    }
+    $('retryDbBtn').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Retry connection`;
+  });
 
   // ── CERTIFICATE INDEX ─────────────────────────────────────
   // Index only contains metadata (id, name, title, date) — NO image data
@@ -866,7 +982,7 @@
   function showDashboard(){
     gate.style.display = 'none';
     dashboard.style.display = 'flex';
-    loadDashboard();
+    checkFirebase().then(() => loadDashboard());
   }
 
   $('logoutBtn').addEventListener('click', () => {
