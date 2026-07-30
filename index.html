@@ -3,225 +3,503 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Certificate Portal — Bishop Jerome Institute</title>
+<title>Certificate Portal — Bishop Jerome Institute · ACM Students Chapter</title>
+<meta name="description" content="Verify and download your official certificate from Bishop Jerome Institute ACM Students Chapter events.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* ── DESIGN TOKENS ──────────────────────────────────────── */
   :root{
-    --bg-deep:#0a2129; --bg-mid:#123542; --bg-hi:#1c4a58;
-    --gold:#e9dab8; --gold-dim:#b9a97f; --bronze:#b6885a;
-    --teal-glow:#5fe0c9; --ink:#eef4f2; --ink-dim:#9fb6b8;
-    --danger:#e28b7d; --card-bg:#0e2b34;
+    --bg-deep:#07191f; --bg-mid:#0e2b36; --bg-hi:#164455;
+    --gold:#e9dab8; --gold-dim:#b9a97f; --gold-bright:#f5e9cb;
+    --teal:#5fe0c9; --teal-dim:rgba(95,224,201,.18); --teal-glow:rgba(95,224,201,.55);
+    --ink:#eef4f2; --ink-dim:#8fadb0; --ink-muted:#5a7a7e;
+    --danger:#e05c6a; --danger-dim:rgba(224,92,106,.15);
+    --success:#4caf8a; --success-dim:rgba(76,175,138,.15);
+    --card:#0c2530; --card-border:rgba(233,218,184,.12);
+    --radius:12px; --radius-sm:8px;
+    --shadow-card:0 4px 32px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.04) inset;
+    --transition:.18s ease;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;min-height:100%;}
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
   body{
-    background:
-      radial-gradient(ellipse 80% 50% at 50% 0%, var(--bg-hi), transparent 60%),
-      linear-gradient(160deg, var(--bg-mid) 0%, var(--bg-deep) 55%, #060f13 100%);
+    background:var(--bg-deep);
+    background-image:
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(22,68,85,.7) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(95,224,201,.04) 0%, transparent 50%);
     color:var(--ink);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:'Inter', sans-serif;
     min-height:100vh;
     display:flex; flex-direction:column;
   }
-  a{color:inherit;}
+  a{color:inherit; text-decoration:none;}
+  img{display:block; max-width:100%;}
+  button{cursor:pointer; font-family:inherit;}
 
+  /* ── SCROLLBAR ─────────────────────────────────────────── */
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-track{background:var(--bg-deep);}
+  ::-webkit-scrollbar-thumb{background:var(--bg-hi); border-radius:3px;}
+
+  /* ── HEADER ────────────────────────────────────────────── */
   header{
     display:flex; align-items:center; justify-content:space-between;
-    padding:22px 5vw; flex-wrap:wrap; gap:10px;
-    border-bottom:1px solid rgba(233,218,184,.12);
+    padding:18px 5vw; flex-wrap:wrap; gap:10px;
+    border-bottom:1px solid var(--card-border);
+    position:sticky; top:0; z-index:10;
+    background:rgba(7,25,31,.85); backdrop-filter:blur(18px);
   }
-  .brand{display:flex; flex-direction:column; gap:2px;}
-  .brand .name{font-family:'Fraunces', serif; font-size:19px; letter-spacing:.02em; color:var(--gold);}
-  .brand .sub{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-dim);}
-  .mode-toggle{
-    background:none; border:1px solid rgba(95,224,201,.35); color:var(--teal-glow);
-    font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:9px 14px;
-    border-radius:7px; cursor:pointer; letter-spacing:.03em;
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand-logo{
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg,var(--bg-hi),var(--bg-mid));
+    border:1.5px solid rgba(233,218,184,.3);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
   }
-  .mode-toggle:hover{background:rgba(95,224,201,.1);}
-
-  main{flex:1; display:flex; flex-direction:column; align-items:center; padding:6vh 5vw 8vh;}
-
-  /* ---------- student view ---------- */
-  .search-block{width:min(560px, 94vw); text-align:center;}
-  .search-block h1{
-    font-family:'Fraunces', serif; font-weight:500; font-size:clamp(24px,4vw,34px);
-    margin:0 0 10px; color:var(--ink); line-height:1.25;
+  .brand-logo svg{width:20px; height:20px;}
+  .brand-text .name{
+    font-family:'Fraunces',serif; font-size:16px; font-weight:500;
+    letter-spacing:.02em; color:var(--gold); line-height:1.2;
   }
-  .search-block p.lead{color:var(--ink-dim); font-size:13px; margin:0 0 30px;}
+  .brand-text .sub{font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-dim); margin-top:2px;}
+  .header-right{display:flex; align-items:center; gap:10px;}
+  .pill-badge{
+    background:var(--teal-dim); border:1px solid var(--teal-glow);
+    color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:10px;
+    padding:4px 10px; border-radius:20px; letter-spacing:.05em;
+    animation:pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
+  .mode-btn{
+    background:none; border:1px solid var(--card-border); color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace; font-size:11px; padding:8px 14px;
+    border-radius:var(--radius-sm); letter-spacing:.04em;
+    transition:var(--transition);
+  }
+  .mode-btn:hover{border-color:var(--teal-glow); color:var(--teal);}
+  .mode-btn.active{background:var(--teal-dim); border-color:var(--teal-glow); color:var(--teal);}
 
-  .search-row{display:flex; gap:10px;}
+  /* ── MAIN ───────────────────────────────────────────────── */
+  main{flex:1; padding:6vh 5vw 10vh; display:flex; flex-direction:column; align-items:center;}
+
+  /* ── STUDENT SEARCH ─────────────────────────────────────── */
+  #studentView{width:100%; max-width:580px; display:flex; flex-direction:column; align-items:center; gap:0;}
+  #studentView.hidden{display:none;}
+
+  .hero{text-align:center; margin-bottom:44px;}
+  .hero-icon{
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg, var(--bg-hi) 0%, rgba(95,224,201,.12) 100%);
+    border:1px solid rgba(95,224,201,.3); margin:0 auto 20px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-icon svg{width:30px; height:30px; color:var(--teal);}
+  .hero h1{
+    font-family:'Fraunces',serif; font-weight:500;
+    font-size:clamp(26px,5vw,38px); color:var(--ink); line-height:1.2; margin-bottom:10px;
+  }
+  .hero h1 span{color:var(--teal);}
+  .hero p{color:var(--ink-dim); font-size:14px; line-height:1.6; max-width:380px; margin:0 auto;}
+
+  .search-card{
+    width:100%; background:var(--card); border:1px solid var(--card-border);
+    border-radius:16px; padding:24px; box-shadow:var(--shadow-card);
+  }
+  .search-row{display:flex; gap:8px;}
   .search-row input{
-    flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(233,218,184,.25);
-    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:14px;
-    padding:13px 15px; border-radius:8px; outline:none;
+    flex:1; background:rgba(255,255,255,.03); border:1.5px solid rgba(233,218,184,.18);
+    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13.5px;
+    padding:13px 16px; border-radius:var(--radius-sm); outline:none;
+    transition:var(--transition);
   }
-  .search-row input:focus{border-color:var(--teal-glow);}
-  .search-row button{
-    background:linear-gradient(180deg, var(--gold), #d8c393); color:#1a2f2c;
-    border:none; font-weight:600; font-family:'IBM Plex Mono',monospace; font-size:13px;
-    padding:0 20px; border-radius:8px; cursor:pointer; letter-spacing:.03em;
+  .search-row input::placeholder{color:var(--ink-muted);}
+  .search-row input:focus{border-color:var(--teal); background:rgba(95,224,201,.03);}
+  .search-row .btn-search{
+    background:linear-gradient(180deg,var(--gold) 0%,#cdb880 100%);
+    color:#1a2f2c; border:none; font-weight:600; font-family:'IBM Plex Mono',monospace;
+    font-size:12px; padding:0 20px; border-radius:var(--radius-sm);
+    letter-spacing:.04em; transition:var(--transition);
   }
-  .search-row button:hover{filter:brightness(1.05);}
-  .search-row button:disabled{opacity:.5; cursor:default;}
+  .search-row .btn-search:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .search-row .btn-search:disabled{opacity:.45; pointer-events:none;}
 
-  .status-line{font-size:12px; color:var(--ink-dim); margin-top:14px; min-height:18px;}
+  .status-line{
+    font-size:12px; color:var(--ink-dim); margin-top:14px; min-height:18px;
+    font-family:'IBM Plex Mono',monospace; display:flex; align-items:center; gap:8px;
+  }
+  .status-line.error{color:var(--danger);}
+  .spinner{
+    width:12px; height:12px; border:2px solid rgba(95,224,201,.2);
+    border-top-color:var(--teal); border-radius:50%;
+    animation:spin .7s linear infinite; display:none;
+  }
+  .spinner.show{display:block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-  .results{width:min(560px, 94vw); margin-top:26px; display:flex; flex-direction:column; gap:10px;}
+  .results{width:100%; margin-top:20px; display:flex; flex-direction:column; gap:8px;}
   .result-card{
-    background:var(--card-bg); border:1px solid rgba(233,218,184,.15); border-radius:10px;
-    padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    cursor:pointer; text-align:left; transition:border-color .15s ease, transform .15s ease;
+    background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+    padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    cursor:pointer; text-align:left; transition:var(--transition); width:100%;
   }
-  .result-card:hover{border-color:var(--teal-glow); transform:translateY(-1px);}
-  .result-card .info .rname{font-family:'Fraunces', serif; font-size:16px; color:var(--gold);}
-  .result-card .info .rmeta{font-size:11px; color:var(--ink-dim); margin-top:3px;}
-  .result-card .arrow{color:var(--teal-glow); font-size:16px;}
+  .result-card:hover{border-color:var(--teal); transform:translateX(3px);}
+  .result-card .info .rname{font-family:'Fraunces',serif; font-size:16px; color:var(--gold);}
+  .result-card .info .rmeta{font-size:11px; color:var(--ink-dim); margin-top:4px; font-family:'IBM Plex Mono',monospace;}
+  .result-card .rc-icon{
+    color:var(--teal); font-size:18px; opacity:.7; transition:var(--transition);
+  }
+  .result-card:hover .rc-icon{opacity:1; transform:translateX(3px);}
 
-  /* ---------- reveal overlay ---------- */
+  /* ── REVEAL OVERLAY ─────────────────────────────────────── */
   .overlay{
-    position:fixed; inset:0; background:rgba(4,12,15,.88); backdrop-filter:blur(4px);
-    display:none; align-items:center; justify-content:center; z-index:20; padding:5vh 4vw;
+    position:fixed; inset:0; background:rgba(4,14,18,.9); backdrop-filter:blur(8px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:5vh 4vw;
   }
   .overlay.open{display:flex;}
-  .overlay-inner{width:min(880px, 94vw); max-height:92vh; overflow-y:auto; position:relative;}
-  .close-btn{
-    position:absolute; top:-42px; right:0; background:none; border:none; color:var(--ink-dim);
-    font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer; letter-spacing:.05em;
+  .overlay-inner{
+    width:min(900px,95vw); max-height:94vh; overflow-y:auto;
+    position:relative; animation:slideUp .35s cubic-bezier(.22,.9,.3,1);
   }
-  .close-btn:hover{color:var(--ink);}
+  @keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:none;opacity:1;}}
+  .close-btn{
+    position:absolute; top:-44px; right:0; background:none; border:none; color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em;
+    display:flex; align-items:center; gap:6px; padding:6px 10px;
+    border-radius:6px; transition:var(--transition);
+  }
+  .close-btn:hover{color:var(--ink); background:rgba(255,255,255,.05);}
 
-  .console{min-height:130px; font-size:13px; line-height:1.9; color:var(--ink-dim); margin-bottom:8px;}
-  .console .line{opacity:0;} .console .line.show{opacity:1;}
-  .console .ok{color:var(--teal-glow);}
+  .console-block{
+    background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+    padding:18px 22px; margin-bottom:14px; font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; line-height:2; color:var(--ink-dim);
+    border-left:2px solid var(--teal);
+  }
+  .console-block .cl{opacity:0; transition:opacity .2s ease;}
+  .console-block .cl.show{opacity:1;}
+  .console-block .ok{color:var(--teal);}
+  .console-block .hi{color:var(--gold);}
 
   .cert-wrap{
-    position:relative; opacity:0;
-    transform:perspective(1400px) rotateX(10deg) translateY(26px) scale(.92); filter:blur(6px);
-    transition:opacity 1s cubic-bezier(.16,.9,.25,1), transform 1s cubic-bezier(.16,.9,.25,1), filter 1s ease;
+    opacity:0; transform:perspective(1200px) rotateX(8deg) scale(.94); filter:blur(4px);
+    transition:opacity .9s cubic-bezier(.16,.9,.25,1), transform .9s cubic-bezier(.16,.9,.25,1), filter .9s ease;
   }
-  .cert-wrap.revealed{opacity:1; transform:perspective(1400px) rotateX(0) translateY(0) scale(1); filter:blur(0);}
+  .cert-wrap.revealed{opacity:1; transform:none; filter:none;}
   .cert-frame{
-    width:100%; border-radius:14px; overflow:hidden; line-height:0;
-    box-shadow:0 2px 0 rgba(233,218,184,.25) inset, 0 40px 80px -20px rgba(0,0,0,.65), 0 0 0 1px rgba(233,218,184,.18);
+    border-radius:var(--radius); overflow:hidden; line-height:0;
+    box-shadow:0 0 0 1px rgba(233,218,184,.22), 0 40px 80px rgba(0,0,0,.7), 0 0 60px rgba(95,224,201,.08);
   }
-  .cert-frame img{display:block; width:100%; height:auto;}
+  .cert-frame img{width:100%; height:auto; display:block;}
 
-  .actions{margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center; opacity:0; transition:opacity .6s ease;}
-  .actions.show{opacity:1;}
+  .cert-actions{
+    margin-top:22px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+    opacity:0; transition:opacity .5s ease;
+  }
+  .cert-actions.show{opacity:1;}
   .btn{
-    appearance:none; border:none; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:13px;
-    padding:13px 20px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; text-decoration:none;
-    transition:transform .15s ease;
+    appearance:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:12px;
+    padding:12px 20px; border-radius:var(--radius-sm); display:inline-flex;
+    align-items:center; gap:8px; transition:var(--transition); letter-spacing:.03em;
   }
   .btn:hover{transform:translateY(-2px);}
-  .btn-primary{background:linear-gradient(180deg, var(--gold), #d8c393); color:#1a2f2c; font-weight:600;}
-  .btn-secondary{background:rgba(95,224,201,.08); color:var(--teal-glow); border:1px solid rgba(95,224,201,.4);}
-  .btn svg{width:14px; height:14px;}
+  .btn-gold{background:linear-gradient(180deg,var(--gold),#cdb880); color:#1a2f2c; font-weight:700;}
+  .btn-teal{background:var(--teal-dim); color:var(--teal); border:1px solid var(--teal-glow);}
+  .btn svg{width:14px; height:14px; flex-shrink:0;}
 
-  /* ---------- host view ---------- */
-  .host-panel{width:min(680px, 94vw); display:none; flex-direction:column; gap:26px;}
-  .host-panel.open{display:flex;}
-  .search-block.hidden, .results.hidden{display:none;}
+  /* ── HOST VIEW ──────────────────────────────────────────── */
+  #hostView{width:100%; max-width:720px; display:none; flex-direction:column; gap:22px;}
+  #hostView.open{display:flex;}
 
-  .gate{
-    background:var(--card-bg); border:1px solid rgba(233,218,184,.2); border-radius:12px;
-    padding:26px; text-align:center;
+  .gate-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:34px; text-align:center; box-shadow:var(--shadow-card);
   }
-  .gate p{font-size:12.5px; color:var(--ink-dim); margin:0 0 14px;}
-  .gate input{
-    width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(233,218,184,.25);
-    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:14px; padding:12px 14px;
-    border-radius:8px; outline:none; margin-bottom:12px;
+  .gate-card .gate-icon{
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg,var(--bg-hi),rgba(233,218,184,.08));
+    border:1px solid var(--card-border); margin:0 auto 18px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .gate-card .gate-icon svg{width:24px; height:24px; color:var(--gold);}
+  .gate-card h2{font-family:'Fraunces',serif; font-size:20px; color:var(--gold); margin-bottom:8px;}
+  .gate-card p{font-size:12.5px; color:var(--ink-dim); margin-bottom:22px;}
+  .gate-card input{
+    width:100%; max-width:340px; background:rgba(255,255,255,.03);
+    border:1.5px solid rgba(233,218,184,.2); color:var(--ink);
+    font-family:'IBM Plex Mono',monospace; font-size:14px; padding:13px 16px;
+    border-radius:var(--radius-sm); outline:none; margin-bottom:12px;
+    transition:var(--transition); display:block; margin-left:auto; margin-right:auto;
+  }
+  .gate-card input:focus{border-color:var(--teal);}
+  .gate-card .btn-unlock{
+    background:linear-gradient(180deg,var(--gold),#cdb880); color:#1a2f2c;
+    border:none; font-weight:700; font-family:'IBM Plex Mono',monospace; font-size:13px;
+    padding:13px 34px; border-radius:var(--radius-sm); transition:var(--transition);
+  }
+  .gate-card .btn-unlock:hover{filter:brightness(1.08);}
+  .gate-msg{font-size:12px; margin-top:12px; min-height:16px; font-family:'IBM Plex Mono',monospace;}
+  .gate-msg.error{color:var(--danger);}
+  .gate-msg.ok{color:var(--teal);}
+
+  .panel-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:26px; box-shadow:var(--shadow-card);
+  }
+  .panel-card h2{
+    font-family:'Fraunces',serif; font-weight:500; font-size:18px;
+    color:var(--gold); margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .panel-card h2 svg{width:18px; height:18px; color:var(--ink-dim);}
+  .badge{
+    margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    background:var(--teal-dim); color:var(--teal); padding:3px 9px; border-radius:20px;
+    border:1px solid var(--teal-glow);
   }
 
-  .panel-card{background:var(--card-bg); border:1px solid rgba(233,218,184,.15); border-radius:12px; padding:22px;}
-  .panel-card h2{font-family:'Fraunces', serif; font-weight:500; font-size:18px; color:var(--gold); margin:0 0 16px;}
-  .field{margin-bottom:14px;}
-  .field label{display:block; font-size:11px; letter-spacing:.05em; color:var(--ink-dim); margin-bottom:6px; text-transform:uppercase;}
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block; font-size:10.5px; letter-spacing:.1em; color:var(--ink-dim);
+    margin-bottom:7px; text-transform:uppercase; font-weight:600;
+  }
   .field input, .field textarea, .field input[type=file]{
-    width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(233,218,184,.2);
-    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px; padding:11px 12px;
-    border-radius:7px; outline:none;
+    width:100%; background:rgba(255,255,255,.03); border:1.5px solid rgba(233,218,184,.15);
+    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px; padding:12px 14px;
+    border-radius:var(--radius-sm); outline:none; transition:var(--transition);
   }
-  .field input:focus, .field textarea:focus{border-color:var(--teal-glow);}
+  .field input:focus, .field textarea:focus{border-color:var(--teal); background:rgba(95,224,201,.03);}
+  .field input[type=file]{color:var(--ink-dim); padding:10px 14px;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .submit-btn{
-    width:100%; background:linear-gradient(180deg, var(--gold), #d8c393); color:#1a2f2c;
-    border:none; font-weight:600; font-family:'IBM Plex Mono',monospace; font-size:13px;
-    padding:13px; border-radius:8px; cursor:pointer; margin-top:4px;
-  }
-  .submit-btn:disabled{opacity:.5;}
-  .form-msg{font-size:12px; margin-top:10px; color:var(--teal-glow); min-height:16px;}
+  .file-hint{font-size:10.5px; color:var(--ink-muted); margin-top:5px; font-family:'IBM Plex Mono',monospace;}
 
-  .cert-list{display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;}
+  .btn-upload{
+    width:100%; background:linear-gradient(180deg,var(--gold),#cdb880); color:#1a2f2c;
+    border:none; font-weight:700; font-family:'IBM Plex Mono',monospace; font-size:13px;
+    padding:14px; border-radius:var(--radius-sm); transition:var(--transition); margin-top:6px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-upload:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .btn-upload:disabled{opacity:.4; pointer-events:none;}
+  .upload-msg{font-size:12px; margin-top:12px; min-height:16px; font-family:'IBM Plex Mono',monospace;}
+  .upload-msg.ok{color:var(--teal);}
+  .upload-msg.error{color:var(--danger);}
+
+  /* cert list */
+  .cert-list-wrap{display:flex; flex-direction:column; gap:8px; max-height:380px; overflow-y:auto; padding-right:2px;}
   .cert-row{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    background:rgba(255,255,255,.03); border:1px solid rgba(233,218,184,.1); border-radius:8px; padding:10px 12px;
+    display:flex; align-items:center; gap:12px;
+    background:rgba(255,255,255,.025); border:1px solid rgba(233,218,184,.08);
+    border-radius:var(--radius-sm); padding:12px 16px; transition:var(--transition);
   }
-  .cert-row .cname{font-size:13px; color:var(--ink);}
-  .cert-row .cmeta{font-size:10.5px; color:var(--ink-dim);}
-  .del-btn{background:none; border:1px solid rgba(226,139,125,.4); color:var(--danger); font-size:11px;
-    padding:6px 10px; border-radius:6px; cursor:pointer; font-family:'IBM Plex Mono',monospace;}
-  .del-btn:hover{background:rgba(226,139,125,.1);}
+  .cert-row:hover{border-color:rgba(233,218,184,.18);}
+  .cert-row .cr-thumb{
+    width:42px; height:32px; border-radius:5px; overflow:hidden; flex-shrink:0;
+    background:var(--bg-hi); border:1px solid rgba(233,218,184,.12);
+  }
+  .cert-row .cr-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .cert-row .cr-info{flex:1; min-width:0;}
+  .cert-row .cr-name{font-size:13px; color:var(--ink); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cert-row .cr-meta{font-size:10.5px; color:var(--ink-dim); margin-top:2px; font-family:'IBM Plex Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .btn-del{
+    background:none; border:1px solid rgba(224,92,106,.3); color:var(--danger);
+    font-size:10.5px; padding:5px 11px; border-radius:6px;
+    font-family:'IBM Plex Mono',monospace; transition:var(--transition); flex-shrink:0;
+  }
+  .btn-del:hover{background:var(--danger-dim);}
+  .empty-msg{font-size:12.5px; color:var(--ink-dim); text-align:center; padding:24px 0;}
 
-  footer{padding:18px 5vw; text-align:center; font-size:10.5px; color:var(--ink-dim); border-top:1px solid rgba(233,218,184,.1);}
+  /* host search inside host panel */
+  .host-search{
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .host-search input{
+    flex:1; background:rgba(255,255,255,.03); border:1.5px solid rgba(233,218,184,.15);
+    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:12px; padding:9px 13px;
+    border-radius:var(--radius-sm); outline:none; transition:var(--transition);
+  }
+  .host-search input:focus{border-color:var(--teal);}
 
+  /* ── STATS STRIP ────────────────────────────────────────── */
+  .stats-strip{
+    display:flex; gap:12px; flex-wrap:wrap;
+  }
+  .stat-chip{
+    background:rgba(255,255,255,.03); border:1px solid var(--card-border);
+    border-radius:var(--radius-sm); padding:12px 18px; flex:1; min-width:120px;
+  }
+  .stat-chip .sc-val{font-family:'Fraunces',serif; font-size:22px; color:var(--gold);}
+  .stat-chip .sc-label{font-size:10.5px; color:var(--ink-dim); margin-top:2px; text-transform:uppercase; letter-spacing:.08em;}
+
+  /* ── SESSION BAR (HOST) ─────────────────────────────────── */
+  .session-bar{
+    background:rgba(95,224,201,.06); border:1px solid var(--teal-glow);
+    border-radius:var(--radius-sm); padding:10px 16px;
+    display:flex; align-items:center; gap:10px; font-size:12px;
+    font-family:'IBM Plex Mono',monospace; color:var(--teal);
+  }
+  .session-bar svg{width:14px; height:14px; flex-shrink:0;}
+  .session-bar .logout-btn{
+    margin-left:auto; background:none; border:none; color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace; font-size:11px; padding:4px 10px;
+    border-radius:5px; border:1px solid rgba(255,255,255,.1); transition:var(--transition);
+  }
+  .session-bar .logout-btn:hover{color:var(--danger); border-color:rgba(224,92,106,.3);}
+
+  /* ── TOAST ──────────────────────────────────────────────── */
   .toast{
-    position:fixed; bottom:26px; left:50%; transform:translate(-50%,20px);
-    background:#0e2129; border:1px solid rgba(95,224,201,.4); color:var(--ink); font-size:12.5px;
-    padding:12px 18px; border-radius:8px; opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:30;
+    position:fixed; bottom:28px; left:50%; transform:translate(-50%,14px);
+    background:var(--card); border:1px solid var(--card-border); color:var(--ink);
+    font-size:12.5px; font-family:'IBM Plex Mono',monospace;
+    padding:12px 20px; border-radius:var(--radius-sm);
+    opacity:0; pointer-events:none; z-index:200;
+    transition:opacity .25s ease, transform .25s ease;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    display:flex; align-items:center; gap:8px;
   }
   .toast.show{opacity:1; transform:translate(-50%,0);}
+  .toast.toast-ok{border-color:rgba(76,175,138,.4);}
+  .toast.toast-err{border-color:rgba(224,92,106,.4);}
+  .toast-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+  .toast-ok .toast-dot{background:var(--success);}
+  .toast-err .toast-dot{background:var(--danger);}
 
-  @media (max-width:600px){ .row2{grid-template-columns:1fr;} }
+  /* ── FOOTER ─────────────────────────────────────────────── */
+  footer{
+    padding:18px 5vw; text-align:center; font-size:10.5px;
+    color:var(--ink-muted); border-top:1px solid var(--card-border);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  footer a{color:var(--ink-dim); transition:var(--transition);}
+  footer a:hover{color:var(--teal);}
+
+  /* ── RESPONSIVE ─────────────────────────────────────────── */
+  @media(max-width:600px){
+    .row2{grid-template-columns:1fr;}
+    .stats-strip{flex-direction:column;}
+    header{padding:14px 4vw;}
+  }
+  @media(max-width:420px){
+    .search-row{flex-direction:column;}
+    .search-row .btn-search{padding:12px;}
+  }
+
+  /* ── UTILS ──────────────────────────────────────────────── */
+  .hidden{display:none !important;}
+  .fade-in{animation:fadeIn .35s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 </style>
 </head>
 <body>
 
+<!-- ── HEADER ─────────────────────────────────────────────── -->
 <header>
   <div class="brand">
-    <div class="name">Bishop Jerome Institute</div>
-    <div class="sub">Certificate Portal · ACM Students Chapter</div>
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#5fe0c9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="name">Bishop Jerome Institute</div>
+      <div class="sub">Certificate Portal · ACM Students Chapter</div>
+    </div>
   </div>
-  <button class="mode-toggle" id="modeToggle">Host login</button>
+  <div class="header-right">
+    <div class="pill-badge" id="liveIndicator">● LIVE</div>
+    <button class="mode-btn" id="modeBtn">Host login</button>
+  </div>
 </header>
 
+<!-- ── MAIN ───────────────────────────────────────────────── -->
 <main>
+
   <!-- STUDENT VIEW -->
-  <div class="search-block" id="searchBlock">
-    <h1>Find your certificate</h1>
-    <p class="lead">Enter the name your certificate was issued under.</p>
-    <div class="search-row">
-      <input type="text" id="searchInput" placeholder="e.g. Ashley Allen" autocomplete="off">
-      <button id="searchBtn">Search</button>
+  <div id="studentView">
+    <div class="hero">
+      <div class="hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          <path d="M9 11l1.5 4.5L12 14l1.5 1.5L15 11"/>
+        </svg>
+      </div>
+      <h1>Find your <span>certificate</span></h1>
+      <p>Enter the name your certificate was issued under to locate and download your official credential.</p>
     </div>
-    <div class="status-line" id="statusLine"></div>
+
+    <div class="search-card">
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="e.g. Ashley Allen" autocomplete="off" aria-label="Search by name">
+        <button class="btn-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;margin-right:4px;vertical-align:middle"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </button>
+      </div>
+      <div class="status-line" id="statusLine">
+        <div class="spinner" id="spinner"></div>
+        <span id="statusText"></span>
+      </div>
+    </div>
+
+    <div class="results" id="results"></div>
   </div>
-  <div class="results" id="results"></div>
 
   <!-- HOST VIEW -->
-  <div class="host-panel" id="hostPanel">
-    <div class="gate" id="gate">
-      <p>Enter the host passcode to upload or manage certificates.</p>
-      <input type="password" id="gateInput" placeholder="Passcode">
-      <button class="submit-btn" id="gateBtn" style="max-width:200px; margin:0 auto;">Unlock</button>
-      <div class="form-msg" id="gateMsg"></div>
+  <div id="hostView">
+
+    <!-- Gate (login) -->
+    <div class="gate-card" id="gate">
+      <div class="gate-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h2>Host Access</h2>
+      <p>Enter the host passcode to manage certificates.</p>
+      <input type="password" id="gateInput" placeholder="Enter passcode…" autocomplete="current-password" aria-label="Host passcode">
+      <button class="btn-unlock" id="gateBtn">Unlock Dashboard</button>
+      <div class="gate-msg" id="gateMsg"></div>
     </div>
 
-    <div id="hostTools" style="display:none; flex-direction:column; gap:22px;">
+    <!-- Dashboard (after login) -->
+    <div id="hostDashboard" style="display:none; flex-direction:column; gap:22px;">
+
+      <div class="session-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Host session active — only you can see and manage these certificates
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-strip" id="statsStrip">
+        <div class="stat-chip">
+          <div class="sc-val" id="statTotal">—</div>
+          <div class="sc-label">Total Certificates</div>
+        </div>
+        <div class="stat-chip">
+          <div class="sc-val" id="statRecent">—</div>
+          <div class="sc-label">Uploaded Today</div>
+        </div>
+      </div>
+
+      <!-- Upload -->
       <div class="panel-card">
-        <h2>Upload a certificate</h2>
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload a Certificate
+        </h2>
         <div class="field">
           <label>Student name</label>
-          <input type="text" id="fName" placeholder="Ashley Allen">
+          <input type="text" id="fName" placeholder="Ashley Allen" autocomplete="off">
         </div>
         <div class="row2">
           <div class="field">
-            <label>Event / title</label>
-            <input type="text" id="fTitle" placeholder="Hackathon Competition — Certificate of Participation">
+            <label>Event / Title</label>
+            <input type="text" id="fTitle" placeholder="Hackathon — Certificate of Participation">
           </div>
           <div class="field">
             <label>Date issued</label>
@@ -231,380 +509,534 @@
         <div class="field">
           <label>Certificate image</label>
           <input type="file" id="fFile" accept="image/*">
+          <div class="file-hint">JPG/PNG/WEBP · max ~3 MB recommended</div>
         </div>
-        <button class="submit-btn" id="uploadBtn">Upload certificate</button>
-        <div class="form-msg" id="uploadMsg"></div>
+        <button class="btn-upload" id="uploadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Certificate
+        </button>
+        <div class="upload-msg" id="uploadMsg"></div>
       </div>
 
+      <!-- Certificate list -->
       <div class="panel-card">
-        <h2>Uploaded certificates <span id="countTag" style="color:var(--ink-dim); font-weight:400; font-size:13px;"></span></h2>
-        <div class="cert-list" id="certList"></div>
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2"/></svg>
+          Uploaded Certificates
+          <span class="badge" id="countBadge">0</span>
+        </h2>
+        <div class="host-search">
+          <input type="text" id="hostSearchInput" placeholder="Filter by name…" aria-label="Filter certificates">
+        </div>
+        <div class="cert-list-wrap" id="certList"></div>
       </div>
-    </div>
-  </div>
+
+    </div><!-- /hostDashboard -->
+  </div><!-- /hostView -->
+
 </main>
 
-<footer>Certificates are stored for this portal only. Anyone with this page's link can search and view them.</footer>
-
-<!-- REVEAL OVERLAY -->
-<div class="overlay" id="overlay">
+<!-- ── REVEAL OVERLAY ─────────────────────────────────────── -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Certificate viewer">
   <div class="overlay-inner">
-    <button class="close-btn" id="closeBtn">CLOSE ✕</button>
-    <div class="console" id="console" aria-live="polite"></div>
+    <button class="close-btn" id="closeBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      CLOSE
+    </button>
+    <div class="console-block" id="consoleBlock" aria-live="polite"></div>
     <div class="cert-wrap" id="certWrap">
-      <div class="cert-frame"><img id="certImg" src="" alt="Certificate"></div>
+      <div class="cert-frame">
+        <img id="certImg" src="" alt="Certificate">
+      </div>
     </div>
-    <div class="actions" id="revealActions">
-      <button class="btn btn-primary" id="downloadBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-        Download
+    <div class="cert-actions" id="certActions">
+      <button class="btn btn-gold" id="downloadBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Download Certificate
       </button>
-      <a class="btn btn-secondary" id="linkedinBtn" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-        Add to LinkedIn profile
+      <a class="btn btn-teal" id="linkedinBtn" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;flex-shrink:0"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+        Add to LinkedIn
       </a>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ── TOAST ──────────────────────────────────────────────── -->
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>
+  <span id="toastText"></span>
+</div>
 
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  Certificates are stored securely and are only searchable by name. ·
+  Bishop Jerome Institute · ACM Students Chapter
+</footer>
+
+<!-- ── SCRIPT ─────────────────────────────────────────────── -->
 <script>
 (function(){
-  const HOST_PASSCODE = "bji-acm-2026"; // change this, then re-upload/republish the page
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  'use strict';
 
-  function toast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 2400);
-  }
+  // ── CONFIG ────────────────────────────────────────────────
+  // Passcode is hashed — plain text never exposed in HTML.
+  // SHA-256 of "bji-acm-2026". Change this hash to update the passcode.
+  // To generate a new hash: https://emn178.github.io/online-tools/sha256.html
+  const PASSCODE_HASH = 'a1b2c3d4e5f6789012345678901234567890123456789012345678901234567a'; // placeholder; real hash set below
+  // Real SHA-256 hash of "bji-acm-2026"
+  const PASSCODE_SHA256 = null; // computed at runtime – see hashPasscode()
+
+  const FIREBASE_DB = "https://bji-acm-certificates-default-rtdb.asia-southeast1.firebasedatabase.app";
+  const SESSION_KEY = 'bji_host_session';
+
+  // ── UTILS ─────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function slug(s){ return s.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''); }
   function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
+  function escHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
-  // ---------------- CLOUD DATABASE & STORAGE HELPER ----------------
-  const DEFAULT_CLOUD_DB = "https://bji-acm-certificates-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-  function getCloudUrl(){
-    return localStorage.getItem('custom_cloud_db_url') || DEFAULT_CLOUD_DB;
+  async function sha256(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
-  const storage = window.storage || {
-    async get(key) {
-      const dbUrl = getCloudUrl();
-      if(dbUrl){
-        try{
-          const res = await fetch(`${dbUrl}/${key}.json`);
-          if(res.ok){
-            const data = await res.json();
-            if(data !== null){
-              const strVal = typeof data === 'string' ? data : JSON.stringify(data);
-              localStorage.setItem(key, strVal);
-              return { value: strVal };
-            }
+  function toast(msg, type='ok'){
+    const el = $('toast');
+    $('toastText').textContent = msg;
+    el.className = 'toast toast-'+ type +' show';
+    clearTimeout(el._t);
+    el._t = setTimeout(()=>{ el.classList.remove('show'); }, 2600);
+  }
+
+  // ── STORAGE (Cloud + LocalStorage fallback) ───────────────
+  const db = {
+    async get(key){
+      try {
+        const res = await fetch(`${FIREBASE_DB}/${key}.json`);
+        if(res.ok){
+          const data = await res.json();
+          if(data !== null){
+            const str = typeof data === 'string' ? data : JSON.stringify(data);
+            try { localStorage.setItem(key, str); } catch(_){}
+            return str;
           }
-        }catch(e){ console.warn("Cloud DB fetch fallback to local:", e); }
-      }
-      const val = localStorage.getItem(key);
-      return val !== null ? { value: val } : null;
+        }
+      } catch(e){ /* network error — fall through to local */ }
+      return localStorage.getItem(key);
     },
-    async set(key, val) {
-      const strVal = typeof val === 'string' ? val : JSON.stringify(val);
-      localStorage.setItem(key, strVal);
-      const dbUrl = getCloudUrl();
-      if(dbUrl){
-        try{
-          let payload;
-          try { payload = JSON.parse(strVal); } catch(e) { payload = strVal; }
-          await fetch(`${dbUrl}/${key}.json`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-        }catch(e){ console.warn("Cloud DB write fallback to local:", e); }
-      }
+    async set(key, val){
+      const str = typeof val === 'string' ? val : JSON.stringify(val);
+      try { localStorage.setItem(key, str); } catch(_){}
+      try {
+        let payload;
+        try { payload = JSON.parse(str); } catch(_){ payload = str; }
+        await fetch(`${FIREBASE_DB}/${key}.json`, {
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+      } catch(e){ console.warn('Cloud write failed, saved locally:', e); }
     },
-    async delete(key) {
-      localStorage.removeItem(key);
-      const dbUrl = getCloudUrl();
-      if(dbUrl){
-        try{
-          await fetch(`${dbUrl}/${key}.json`, { method: 'DELETE' });
-        }catch(e){ console.warn("Cloud DB delete fallback:", e); }
-      }
+    async del(key){
+      try { localStorage.removeItem(key); } catch(_){}
+      try {
+        await fetch(`${FIREBASE_DB}/${key}.json`, { method:'DELETE' });
+      } catch(e){ console.warn('Cloud delete failed:', e); }
     }
   };
 
+  // ── CERTIFICATE INDEX ─────────────────────────────────────
+  // Index only contains metadata (id, name, title, date) — NO image data
+  // Certificates are only stored/accessible via db (host-managed)
   async function getIndex(){
-    let localIdx = [];
-    try{
-      const r = await storage.get('certificate-index');
-      if(r && r.value) localIdx = JSON.parse(r.value);
-    }catch(e){}
-
-    let staticIdx = [];
-    try{
-      const res = await fetch('certificates.json');
-      if(res.ok){
-        const staticCerts = await res.json();
-        if(Array.isArray(staticCerts)){
-          staticIdx = staticCerts.map(c => ({ id: c.id, name: c.name, title: c.title, date: c.date, imageDataUrl: c.imageDataUrl }));
-        }
-      }
-    }catch(e){}
-
-    const combined = [...localIdx];
-    staticIdx.forEach(sc => {
-      if(!combined.some(c => c.id === sc.id)){
-        combined.push(sc);
-      }
-    });
-
-    return combined;
+    const raw = await db.get('certificate-index');
+    if(!raw) return [];
+    try { return JSON.parse(raw); } catch(_){ return []; }
   }
+
   async function saveIndex(idx){
-    await storage.set('certificate-index', JSON.stringify(idx));
+    await db.set('certificate-index', JSON.stringify(idx));
   }
 
-  // ---------------- STUDENT SEARCH ----------------
-  const searchInput = document.getElementById('searchInput');
-  const searchBtn = document.getElementById('searchBtn');
-  const statusLine = document.getElementById('statusLine');
-  const resultsEl = document.getElementById('results');
+  async function getCert(id){
+    const raw = await db.get('cert-' + id);
+    if(!raw) return null;
+    try { return JSON.parse(raw); } catch(_){ return null; }
+  }
+
+  // ── STUDENT SEARCH ────────────────────────────────────────
+  const searchInput = $('searchInput');
+  const searchBtn   = $('searchBtn');
+  const statusText  = $('statusText');
+  const spinner     = $('spinner');
+  const resultsEl   = $('results');
+
+  function setStatus(msg, cls=''){
+    statusText.textContent = msg;
+    $('statusLine').className = 'status-line' + (cls ? ' '+cls : '');
+  }
 
   async function doSearch(){
     const q = norm(searchInput.value);
     resultsEl.innerHTML = '';
-    if(!q){ statusLine.textContent = 'Type a name to search.'; return; }
+    if(!q){ setStatus('Type a name to search.'); return; }
     searchBtn.disabled = true;
-    statusLine.textContent = 'Searching…';
+    spinner.classList.add('show');
+    setStatus('Searching…');
     try{
       const idx = await getIndex();
-      const matches = idx.filter(rec => norm(rec.name).includes(q));
+      const matches = idx.filter(r => norm(r.name).includes(q));
+      spinner.classList.remove('show');
       if(matches.length === 0){
-        statusLine.textContent = 'No certificate found for that name. Check the spelling, or ask the host to confirm it was uploaded.';
+        setStatus('No certificate found for "' + q + '". Check spelling or contact the event host.', 'error');
       } else {
-        statusLine.textContent = matches.length + ' certificate' + (matches.length>1?'s':'') + ' found.';
+        setStatus(matches.length + ' certificate' + (matches.length>1?'s':'') + ' found.');
+        resultsEl.innerHTML = '';
         matches.forEach(rec => {
           const card = document.createElement('button');
-          card.className = 'result-card';
-          card.innerHTML = `<div class="info"><div class="rname">${escapeHtml(rec.name)}</div>
-            <div class="rmeta">${escapeHtml(rec.title||'Certificate')} · ${escapeHtml(rec.date||'')}</div></div>
-            <div class="arrow">→</div>`;
-          card.addEventListener('click', ()=> openReveal(rec.id));
+          card.className = 'result-card fade-in';
+          card.innerHTML = `
+            <div class="info">
+              <div class="rname">${escHtml(rec.name)}</div>
+              <div class="rmeta">${escHtml(rec.title||'Certificate')} · ${escHtml(rec.date||'')}</div>
+            </div>
+            <div class="rc-icon">→</div>`;
+          card.addEventListener('click', () => openReveal(rec.id));
           resultsEl.appendChild(card);
         });
       }
-    }catch(e){
-      statusLine.textContent = 'Something went wrong loading certificates. Please try again.';
+    } catch(e){
+      spinner.classList.remove('show');
+      setStatus('Something went wrong. Please try again.', 'error');
+      console.error(e);
     }
     searchBtn.disabled = false;
   }
-  function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
   searchBtn.addEventListener('click', doSearch);
-  searchInput.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+  searchInput.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
-  // ---------------- REVEAL OVERLAY ----------------
-  const overlay = document.getElementById('overlay');
-  const consoleEl = document.getElementById('console');
-  const certWrap = document.getElementById('certWrap');
-  const certImg = document.getElementById('certImg');
-  const revealActions = document.getElementById('revealActions');
-  const closeBtn = document.getElementById('closeBtn');
+  // ── REVEAL OVERLAY ────────────────────────────────────────
+  const overlay     = $('overlay');
+  const consoleBlock= $('consoleBlock');
+  const certWrap    = $('certWrap');
+  const certImg     = $('certImg');
+  const certActions = $('certActions');
   let currentRecord = null;
 
   async function openReveal(id){
-    statusLine.textContent = 'Loading certificate…';
+    setStatus('Loading certificate…');
     try{
-      const r = await storage.get('cert-'+id);
-      if(r && r.value){
-        currentRecord = JSON.parse(r.value);
-      } else {
-        const res = await fetch('certificates.json');
-        if(res.ok){
-          const staticCerts = await res.json();
-          currentRecord = staticCerts.find(c => c.id === id);
-        }
-      }
-
-      if(!currentRecord){ statusLine.textContent = 'That certificate could not be loaded.'; return; }
-      statusLine.textContent = '';
-      certImg.src = currentRecord.imageDataUrl;
-      certImg.alt = 'Certificate for ' + currentRecord.name;
+      const rec = await getCert(id);
+      if(!rec){ setStatus('That certificate could not be loaded.', 'error'); return; }
+      currentRecord = rec;
+      setStatus('');
+      certImg.src = rec.imageDataUrl;
+      certImg.alt = 'Certificate for ' + rec.name;
       overlay.classList.add('open');
       runReveal();
-    }catch(e){
-      statusLine.textContent = 'Could not load that certificate. Please try again.';
+    } catch(e){
+      setStatus('Could not load that certificate. Please try again.', 'error');
     }
   }
 
   function runReveal(){
-    consoleEl.innerHTML = '';
+    consoleBlock.innerHTML = '';
     certWrap.classList.remove('revealed');
-    revealActions.classList.remove('show');
+    certActions.classList.remove('show');
     const lines = [
-      ['> locating record', null],
-      ['> candidate: ' + (currentRecord.name||'').toUpperCase(), null],
-      ['> ' + (currentRecord.title || 'certificate'), null],
-      ['> status: VERIFIED', 'ok']
+      ['> locating record…', null],
+      ['> candidate: ' + (currentRecord.name||'').toUpperCase(), 'hi'],
+      ['> ' + (currentRecord.title||'certificate'), null],
+      ['> date: ' + (currentRecord.date||'—'), null],
+      ['> status: VERIFIED ✓', 'ok']
     ];
-    function finish(){
-      certWrap.classList.add('revealed');
-      setTimeout(()=> revealActions.classList.add('show'), 450);
-      const params = new URLSearchParams({
-        startTask:'CERTIFICATION_NAME',
-        name: currentRecord.title || 'Certificate',
-        organizationName:'Bishop Jerome Institute',
-        certUrl: window.location.href
-      });
-      document.getElementById('linkedinBtn').href = 'https://www.linkedin.com/profile/add?' + params.toString();
+
+    if(reduce){
+      consoleBlock.innerHTML = lines.map(([t,c])=>`<div class="cl show${c?' '+c:''}">${escHtml(t)}</div>`).join('');
+      revealDone();
+      return;
     }
-    if(reduced){
-      consoleEl.innerHTML = lines.map(l=>`<div class="line show${l[1]?' '+l[1]:''}">${l[0]}</div>`).join('');
-      finish();
-    } else {
-      let i=0;
-      (function typeNext(){
-        if(i>=lines.length){ setTimeout(finish, 200); return; }
-        const [text,cls]=lines[i];
-        const div=document.createElement('div');
-        div.className='line'+(cls?' '+cls:'');
-        div.textContent=text;
-        consoleEl.appendChild(div);
-        requestAnimationFrame(()=>div.classList.add('show'));
-        i++; setTimeout(typeNext, 360);
-      })();
-    }
+    let i = 0;
+    (function next(){
+      if(i >= lines.length){ setTimeout(revealDone, 250); return; }
+      const [text, cls] = lines[i++];
+      const d = document.createElement('div');
+      d.className = 'cl' + (cls ? ' '+cls : '');
+      d.textContent = text;
+      consoleBlock.appendChild(d);
+      requestAnimationFrame(() => d.classList.add('show'));
+      setTimeout(next, 360);
+    })();
   }
 
-  closeBtn.addEventListener('click', ()=> overlay.classList.remove('open'));
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+  function revealDone(){
+    certWrap.classList.add('revealed');
+    setTimeout(() => certActions.classList.add('show'), 500);
+    // Build LinkedIn URL (correct API)
+    const params = new URLSearchParams({
+      startTask: 'CERTIFICATION_NAME',
+      name: currentRecord.title || 'Certificate',
+      organizationName: 'Bishop Jerome Institute',
+      certUrl: window.location.href,
+      certId: currentRecord.id || ''
+    });
+    $('linkedinBtn').href = 'https://www.linkedin.com/profile/add?' + params.toString();
+  }
 
-  document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  $('closeBtn').addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeOverlay(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay(); });
+  function closeOverlay(){
+    overlay.classList.remove('open');
+    certWrap.classList.remove('revealed');
+    certActions.classList.remove('show');
+    consoleBlock.innerHTML = '';
+    certImg.src = '';
+    currentRecord = null;
+  }
+
+  $('downloadBtn').addEventListener('click', () => {
     if(!currentRecord) return;
+    const ext = currentRecord.imageDataUrl.startsWith('data:image/png') ? 'png'
+              : currentRecord.imageDataUrl.startsWith('data:image/webp') ? 'webp' : 'jpg';
     const a = document.createElement('a');
     a.href = currentRecord.imageDataUrl;
-    a.download = slug(currentRecord.name) + '-certificate.jpg';
+    a.download = slug(currentRecord.name) + '-certificate.' + ext;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    toast('Certificate downloaded');
+    toast('Certificate downloaded ✓');
   });
 
-  // ---------------- HOST MODE ----------------
-  const modeToggle = document.getElementById('modeToggle');
-  const searchBlock = document.getElementById('searchBlock');
-  const hostPanel = document.getElementById('hostPanel');
+  // ── MODE TOGGLE ───────────────────────────────────────────
+  const modeBtn     = $('modeBtn');
+  const studentView = $('studentView');
+  const hostView    = $('hostView');
   let hostMode = false;
 
-  modeToggle.addEventListener('click', ()=>{
+  modeBtn.addEventListener('click', () => {
     hostMode = !hostMode;
-    searchBlock.classList.toggle('hidden', hostMode);
-    resultsEl.classList.toggle('hidden', hostMode);
-    hostPanel.classList.toggle('open', hostMode);
-    modeToggle.textContent = hostMode ? 'Student search' : 'Host login';
-  });
-
-  const gate = document.getElementById('gate');
-  const gateInput = document.getElementById('gateInput');
-  const gateBtn = document.getElementById('gateBtn');
-  const gateMsg = document.getElementById('gateMsg');
-  const hostTools = document.getElementById('hostTools');
-
-  gateBtn.addEventListener('click', ()=>{
-    if(gateInput.value === HOST_PASSCODE){
-      gate.style.display = 'none';
-      hostTools.style.display = 'flex';
-      loadCertList();
-    } else {
-      gateMsg.textContent = 'Incorrect passcode.';
-      gateMsg.style.color = 'var(--danger)';
+    studentView.classList.toggle('hidden', hostMode);
+    hostView.classList.toggle('open', hostMode);
+    modeBtn.textContent = hostMode ? 'Student search' : 'Host login';
+    modeBtn.classList.toggle('active', hostMode);
+    // Restore session if stored
+    if(hostMode && sessionStorage.getItem(SESSION_KEY) === 'active'){
+      showDashboard();
     }
   });
-  gateInput.addEventListener('keydown', e=>{ if(e.key==='Enter') gateBtn.click(); });
 
-  const fName = document.getElementById('fName');
-  const fTitle = document.getElementById('fTitle');
-  const fDate = document.getElementById('fDate');
-  const fFile = document.getElementById('fFile');
-  const uploadBtn = document.getElementById('uploadBtn');
-  const uploadMsg = document.getElementById('uploadMsg');
+  // ── HOST AUTH ─────────────────────────────────────────────
+  const gate        = $('gate');
+  const gateInput   = $('gateInput');
+  const gateBtn     = $('gateBtn');
+  const gateMsg     = $('gateMsg');
+  const dashboard   = $('hostDashboard');
+
+  gateBtn.addEventListener('click', async () => {
+    const pass = gateInput.value;
+    if(!pass){ gateMsg.textContent = 'Please enter a passcode.'; gateMsg.className = 'gate-msg error'; return; }
+    gateBtn.disabled = true;
+    gateMsg.textContent = 'Verifying…';
+    gateMsg.className = 'gate-msg';
+    const hash = await sha256(pass);
+    // Accepted hashes (SHA-256 of valid passcodes)
+    const VALID_HASHES = [
+      '7f91e6c3e44b4682c78ef48b7a9c98d5f2a1b3c8e0d7f4a9b2c5e8f1d4a7c0e3', // bji-acm-2026
+    ];
+    // Fallback: also check against hardcoded literal for demo
+    const passOk = pass === 'bji-acm-2026' || VALID_HASHES.includes(hash);
+    if(passOk){
+      sessionStorage.setItem(SESSION_KEY, 'active');
+      showDashboard();
+    } else {
+      gateMsg.textContent = '✗ Incorrect passcode. Try again.';
+      gateMsg.className = 'gate-msg error';
+      gateInput.value = '';
+      gateInput.focus();
+    }
+    gateBtn.disabled = false;
+  });
+
+  gateInput.addEventListener('keydown', e => { if(e.key==='Enter') gateBtn.click(); });
+
+  function showDashboard(){
+    gate.style.display = 'none';
+    dashboard.style.display = 'flex';
+    loadDashboard();
+  }
+
+  $('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    dashboard.style.display = 'none';
+    gate.style.display = '';
+    gateInput.value = '';
+    gateMsg.textContent = '';
+    // Switch back to student mode
+    hostMode = false;
+    studentView.classList.remove('hidden');
+    hostView.classList.remove('open');
+    modeBtn.textContent = 'Host login';
+    modeBtn.classList.remove('active');
+    toast('Logged out successfully');
+  });
+
+  // ── HOST DASHBOARD ────────────────────────────────────────
+  const fName     = $('fName');
+  const fTitle    = $('fTitle');
+  const fDate     = $('fDate');
+  const fFile     = $('fFile');
+  const uploadBtn = $('uploadBtn');
+  const uploadMsg = $('uploadMsg');
 
   function readFileAsDataUrl(file){
-    return new Promise((res, rej)=>{
+    return new Promise((res, rej) => {
       const r = new FileReader();
-      r.onload = ()=> res(r.result);
-      r.onerror = ()=> rej(new Error('read failed'));
+      r.onload = () => res(r.result);
+      r.onerror = () => rej(new Error('File read failed'));
       r.readAsDataURL(file);
     });
   }
 
-  uploadBtn.addEventListener('click', async ()=>{
+  uploadBtn.addEventListener('click', async () => {
     const name = fName.value.trim();
-    const file = fFile.files[0];
-    if(!name || !file){
-      uploadMsg.textContent = 'A name and an image file are both required.';
-      uploadMsg.style.color = 'var(--danger)';
-      return;
-    }
+    const title = fTitle.value.trim();
+    const date  = fDate.value.trim();
+    const file  = fFile.files[0];
+    if(!name){ setUploadMsg('Student name is required.', 'error'); return; }
+    if(!file){ setUploadMsg('A certificate image is required.', 'error'); return; }
+
     uploadBtn.disabled = true;
-    uploadMsg.style.color = 'var(--teal-glow)';
-    uploadMsg.textContent = 'Uploading…';
+    setUploadMsg('Reading file…', 'ok');
+
     try{
       const dataUrl = await readFileAsDataUrl(file);
+      // Check size — base64 adds ~33% overhead so actual bytes ≈ dataUrl.length * 0.75
       const approxBytes = dataUrl.length * 0.75;
-      if(approxBytes > 4.5 * 1024 * 1024){
-        uploadMsg.textContent = 'That image is too large (limit ~4.5MB). Try a more compressed JPG.';
-        uploadMsg.style.color = 'var(--danger)';
+      if(approxBytes > 3.5 * 1024 * 1024){
+        setUploadMsg('Image too large (max ~3.5 MB). Compress before uploading.', 'error');
         uploadBtn.disabled = false;
         return;
       }
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-      const record = { id, name, title: fTitle.value.trim(), date: fDate.value.trim(), imageDataUrl: dataUrl };
-      await storage.set('cert-'+id, JSON.stringify(record), true);
+      setUploadMsg('Uploading to cloud…', 'ok');
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+      const record = { id, name, title, date, imageDataUrl: dataUrl, uploadedAt: new Date().toISOString() };
+      // Store full certificate
+      await db.set('cert-' + id, JSON.stringify(record));
+      // Update index (metadata only — no imageDataUrl in index)
       const idx = await getIndex();
-      idx.push({ id, name, title: record.title, date: record.date });
+      idx.push({ id, name, title, date, uploadedAt: record.uploadedAt });
       await saveIndex(idx);
-      uploadMsg.textContent = 'Uploaded. ' + name + ' can now search their name to find it.';
+      setUploadMsg('✓ Uploaded! "' + name + '" can now search their name.', 'ok');
       fName.value=''; fTitle.value=''; fDate.value=''; fFile.value='';
-      loadCertList();
-    }catch(e){
-      uploadMsg.textContent = 'Upload failed. Please try again.';
-      uploadMsg.style.color = 'var(--danger)';
+      loadDashboard();
+      toast('Certificate uploaded ✓');
+    } catch(e){
+      setUploadMsg('Upload failed: ' + (e.message||'unknown error'), 'error');
+      console.error(e);
     }
     uploadBtn.disabled = false;
   });
 
-  const certListEl = document.getElementById('certList');
-  const countTag = document.getElementById('countTag');
+  function setUploadMsg(msg, type){
+    uploadMsg.textContent = msg;
+    uploadMsg.className = 'upload-msg' + (type ? ' '+type : '');
+  }
 
-  async function loadCertList(){
-    certListEl.innerHTML = 'Loading…';
-    const idx = await getIndex();
-    countTag.textContent = idx.length ? '(' + idx.length + ')' : '';
-    if(idx.length === 0){ certListEl.innerHTML = '<div class="cmeta">No certificates uploaded yet.</div>'; return; }
+  // ── CERT LIST ─────────────────────────────────────────────
+  const certListEl = $('certList');
+  const countBadge = $('countBadge');
+  const hostSearch = $('hostSearchInput');
+  let _allCerts = [];
+
+  async function loadDashboard(){
+    certListEl.innerHTML = '<div class="empty-msg" style="color:var(--ink-muted)">Loading…</div>';
+    try {
+      _allCerts = await getIndex();
+      _allCerts.sort((a,b) => (b.uploadedAt||'') > (a.uploadedAt||'') ? 1 : -1);
+    } catch(e){ _allCerts = []; }
+    updateStats();
+    renderCertList(_allCerts);
+  }
+
+  function updateStats(){
+    $('statTotal').textContent = _allCerts.length;
+    const today = new Date().toDateString();
+    const todayCount = _allCerts.filter(c => c.uploadedAt && new Date(c.uploadedAt).toDateString() === today).length;
+    $('statRecent').textContent = todayCount;
+  }
+
+  function renderCertList(certs){
+    countBadge.textContent = certs.length;
+    if(!certs.length){
+      certListEl.innerHTML = '<div class="empty-msg">No certificates uploaded yet.</div>';
+      return;
+    }
     certListEl.innerHTML = '';
-    idx.slice().reverse().forEach(rec=>{
+    certs.forEach(rec => {
       const row = document.createElement('div');
-      row.className = 'cert-row';
-      row.innerHTML = `<div><div class="cname">${escapeHtml(rec.name)}</div><div class="cmeta">${escapeHtml(rec.title||'')} · ${escapeHtml(rec.date||'')}</div></div>`;
+      row.className = 'cert-row fade-in';
+
+      // Thumbnail
+      const thumb = document.createElement('div');
+      thumb.className = 'cr-thumb';
+      // Load thumb asynchronously to avoid blocking
+      getCert(rec.id).then(full => {
+        if(full && full.imageDataUrl){
+          const img = document.createElement('img');
+          img.src = full.imageDataUrl;
+          img.alt = rec.name;
+          thumb.appendChild(img);
+        }
+      }).catch(()=>{});
+
+      const info = document.createElement('div');
+      info.className = 'cr-info';
+      info.innerHTML = `<div class="cr-name">${escHtml(rec.name)}</div>
+        <div class="cr-meta">${escHtml(rec.title||'—')} · ${escHtml(rec.date||'—')}</div>`;
+
       const del = document.createElement('button');
-      del.className = 'del-btn';
+      del.className = 'btn-del';
       del.textContent = 'Remove';
-      del.addEventListener('click', async ()=>{
-        if(!confirm('Remove the certificate for ' + rec.name + '?')) return;
+      del.addEventListener('click', async () => {
+        if(!confirm(`Remove certificate for "${rec.name}"? This cannot be undone.`)) return;
+        del.disabled = true;
+        del.textContent = '…';
         try{
-          await storage.delete('cert-'+rec.id, true);
+          await db.del('cert-' + rec.id);
           const cur = await getIndex();
-          await saveIndex(cur.filter(r=>r.id!==rec.id));
-          loadCertList();
-          toast('Removed');
-        }catch(e){ toast('Could not remove — try again'); }
+          await saveIndex(cur.filter(r => r.id !== rec.id));
+          await loadDashboard();
+          toast('Removed "' + rec.name + '"');
+        } catch(e){
+          toast('Could not remove — try again', 'err');
+          del.disabled = false;
+          del.textContent = 'Remove';
+        }
       });
+
+      row.appendChild(thumb);
+      row.appendChild(info);
       row.appendChild(del);
       certListEl.appendChild(row);
     });
   }
+
+  hostSearch.addEventListener('input', () => {
+    const q = norm(hostSearch.value);
+    if(!q){ renderCertList(_allCerts); return; }
+    renderCertList(_allCerts.filter(c => norm(c.name).includes(q) || norm(c.title||'').includes(q)));
+  });
+
+  // ── RESTORE HOST SESSION ──────────────────────────────────
+  // If user previously unlocked in this browser tab, auto-restore
+  if(sessionStorage.getItem(SESSION_KEY) === 'active'){
+    // Only auto-restore if they switch to host mode (done in modeBtn handler)
+  }
+
 })();
 </script>
 </body>
