@@ -337,13 +337,34 @@
   };
 
   async function getIndex(){
+    let localIdx = [];
     try{
-      const r = await storage.get('certificate-index', true);
-      return r ? JSON.parse(r.value) : [];
-    }catch(e){ return []; }
+      const r = await storage.get('certificate-index');
+      if(r && r.value) localIdx = JSON.parse(r.value);
+    }catch(e){}
+
+    let staticIdx = [];
+    try{
+      const res = await fetch('certificates.json');
+      if(res.ok){
+        const staticCerts = await res.json();
+        if(Array.isArray(staticCerts)){
+          staticIdx = staticCerts.map(c => ({ id: c.id, name: c.name, title: c.title, date: c.date, imageDataUrl: c.imageDataUrl }));
+        }
+      }
+    }catch(e){}
+
+    const combined = [...localIdx];
+    staticIdx.forEach(sc => {
+      if(!combined.some(c => c.id === sc.id)){
+        combined.push(sc);
+      }
+    });
+
+    return combined;
   }
   async function saveIndex(idx){
-    await storage.set('certificate-index', JSON.stringify(idx), true);
+    await storage.set('certificate-index', JSON.stringify(idx));
   }
 
   // ---------------- STUDENT SEARCH ----------------
@@ -397,9 +418,18 @@
   async function openReveal(id){
     statusLine.textContent = 'Loading certificate…';
     try{
-      const r = await storage.get('cert-'+id, true);
-      if(!r){ statusLine.textContent = 'That certificate could not be loaded.'; return; }
-      currentRecord = JSON.parse(r.value);
+      const r = await storage.get('cert-'+id);
+      if(r && r.value){
+        currentRecord = JSON.parse(r.value);
+      } else {
+        const res = await fetch('certificates.json');
+        if(res.ok){
+          const staticCerts = await res.json();
+          currentRecord = staticCerts.find(c => c.id === id);
+        }
+      }
+
+      if(!currentRecord){ statusLine.textContent = 'That certificate could not be loaded.'; return; }
       statusLine.textContent = '';
       certImg.src = currentRecord.imageDataUrl;
       certImg.alt = 'Certificate for ' + currentRecord.name;
