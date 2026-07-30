@@ -283,15 +283,28 @@
   function slug(s){ return s.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''); }
   function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
 
-  // ---------------- INDEX helpers ----------------
+  // ---------------- STORAGE HELPER ----------------
+  const storage = window.storage || {
+    async get(key) {
+      const val = localStorage.getItem(key);
+      return val !== null ? { value: val } : null;
+    },
+    async set(key, val) {
+      localStorage.setItem(key, val);
+    },
+    async delete(key) {
+      localStorage.removeItem(key);
+    }
+  };
+
   async function getIndex(){
     try{
-      const r = await window.storage.get('certificate-index', true);
+      const r = await storage.get('certificate-index', true);
       return r ? JSON.parse(r.value) : [];
     }catch(e){ return []; }
   }
   async function saveIndex(idx){
-    await window.storage.set('certificate-index', JSON.stringify(idx), true);
+    await storage.set('certificate-index', JSON.stringify(idx), true);
   }
 
   // ---------------- STUDENT SEARCH ----------------
@@ -345,7 +358,7 @@
   async function openReveal(id){
     statusLine.textContent = 'Loading certificate…';
     try{
-      const r = await window.storage.get('cert-'+id, true);
+      const r = await storage.get('cert-'+id, true);
       if(!r){ statusLine.textContent = 'That certificate could not be loaded.'; return; }
       currentRecord = JSON.parse(r.value);
       statusLine.textContent = '';
@@ -479,7 +492,7 @@
       }
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
       const record = { id, name, title: fTitle.value.trim(), date: fDate.value.trim(), imageDataUrl: dataUrl };
-      await window.storage.set('cert-'+id, JSON.stringify(record), true);
+      await storage.set('cert-'+id, JSON.stringify(record), true);
       const idx = await getIndex();
       idx.push({ id, name, title: record.title, date: record.date });
       await saveIndex(idx);
@@ -512,7 +525,7 @@
       del.addEventListener('click', async ()=>{
         if(!confirm('Remove the certificate for ' + rec.name + '?')) return;
         try{
-          await window.storage.delete('cert-'+rec.id, true);
+          await storage.delete('cert-'+rec.id, true);
           const cur = await getIndex();
           await saveIndex(cur.filter(r=>r.id!==rec.id));
           loadCertList();
