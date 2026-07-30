@@ -283,17 +283,56 @@
   function slug(s){ return s.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''); }
   function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
 
-  // ---------------- STORAGE HELPER ----------------
+  // ---------------- CLOUD DATABASE & STORAGE HELPER ----------------
+  const DEFAULT_CLOUD_DB = "https://bji-acm-certificates-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+  function getCloudUrl(){
+    return localStorage.getItem('custom_cloud_db_url') || DEFAULT_CLOUD_DB;
+  }
+
   const storage = window.storage || {
     async get(key) {
+      const dbUrl = getCloudUrl();
+      if(dbUrl){
+        try{
+          const res = await fetch(`${dbUrl}/${key}.json`);
+          if(res.ok){
+            const data = await res.json();
+            if(data !== null){
+              const strVal = typeof data === 'string' ? data : JSON.stringify(data);
+              localStorage.setItem(key, strVal);
+              return { value: strVal };
+            }
+          }
+        }catch(e){ console.warn("Cloud DB fetch fallback to local:", e); }
+      }
       const val = localStorage.getItem(key);
       return val !== null ? { value: val } : null;
     },
     async set(key, val) {
-      localStorage.setItem(key, val);
+      const strVal = typeof val === 'string' ? val : JSON.stringify(val);
+      localStorage.setItem(key, strVal);
+      const dbUrl = getCloudUrl();
+      if(dbUrl){
+        try{
+          let payload;
+          try { payload = JSON.parse(strVal); } catch(e) { payload = strVal; }
+          await fetch(`${dbUrl}/${key}.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }catch(e){ console.warn("Cloud DB write fallback to local:", e); }
+      }
     },
     async delete(key) {
       localStorage.removeItem(key);
+      const dbUrl = getCloudUrl();
+      if(dbUrl){
+        try{
+          await fetch(`${dbUrl}/${key}.json`, { method: 'DELETE' });
+        }catch(e){ console.warn("Cloud DB delete fallback:", e); }
+      }
     }
   };
 
