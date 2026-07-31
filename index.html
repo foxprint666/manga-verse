@@ -417,6 +417,24 @@
   .db-ok.show{display:flex;}
   .db-ok svg{width:16px; height:16px; flex-shrink:0;}
 
+  /* ── ANALYTICS STYLES ────────────────────────────────────── */
+  .badge-act{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600;
+    padding:3px 8px; border-radius:4px; letter-spacing:.04em; flex-shrink:0;
+  }
+  .badge-search{background:rgba(95,224,201,.15); color:var(--teal); border:1px solid var(--teal-glow);}
+  .badge-view{background:rgba(233,218,184,.15); color:var(--gold); border:1px solid rgba(233,218,184,.3);}
+  .badge-download{background:rgba(76,175,138,.18); color:var(--success); border:1px solid rgba(76,175,138,.4);}
+  .act-row{
+    display:flex; align-items:center; gap:12px;
+    background:rgba(255,255,255,.02); border:1px solid rgba(233,218,184,.06);
+    border-radius:var(--radius-sm); padding:10px 14px; transition:var(--transition);
+  }
+  .act-row:hover{border-color:rgba(233,218,184,.15); background:rgba(255,255,255,.035);}
+  .act-details{flex:1; min-width:0; font-size:12px; color:var(--ink-dim);}
+  .act-details strong{color:var(--ink); font-weight:500;}
+  .act-time{font-size:10px; color:var(--ink-muted); font-family:'IBM Plex Mono',monospace; flex-shrink:0;}
+
   /* ── UTILS ──────────────────────────────────────────────── */
   .hidden{display:none !important;}
   .fade-in{animation:fadeIn .35s ease;}
@@ -547,8 +565,16 @@
           <div class="sc-label">Total Certificates</div>
         </div>
         <div class="stat-chip">
-          <div class="sc-val" id="statRecent">—</div>
-          <div class="sc-label">Uploaded Today</div>
+          <div class="sc-val" id="statSearches">0</div>
+          <div class="sc-label">Searches</div>
+        </div>
+        <div class="stat-chip">
+          <div class="sc-val" id="statViews">0</div>
+          <div class="sc-label">Views</div>
+        </div>
+        <div class="stat-chip">
+          <div class="sc-val" id="statDownloads">0</div>
+          <div class="sc-label">Downloads</div>
         </div>
       </div>
 
@@ -582,6 +608,18 @@
           Upload Certificate
         </button>
         <div class="upload-msg" id="uploadMsg"></div>
+      </div>
+
+      <!-- Analytics & Activity Log -->
+      <div class="panel-card">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Real-time Activity Log
+          <button class="btn-del" id="clearLogsBtn" style="margin-left:auto;font-size:10.5px;">Clear Activity Log</button>
+        </h2>
+        <div class="cert-list-wrap" id="analyticsList" style="max-height:280px;">
+          <div class="empty-msg">No activity recorded yet.</div>
+        </div>
       </div>
 
       <!-- Certificate list -->
@@ -784,6 +822,29 @@
     try { return JSON.parse(raw); } catch(_){ return null; }
   }
 
+  // ── ANALYTICS LOGGING ─────────────────────────────────────
+  async function logActivity(type, details){
+    try {
+      const entry = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+        type, // 'SEARCH', 'VIEW', 'DOWNLOAD'
+        details,
+        timestamp: new Date().toISOString()
+      };
+      const raw = await db.get('analytics-log');
+      let logs = [];
+      if(raw){
+        try { logs = JSON.parse(raw); } catch(_){}
+      }
+      if(!Array.isArray(logs)) logs = [];
+      logs.unshift(entry);
+      if(logs.length > 100) logs = logs.slice(0, 100);
+      await db.set('analytics-log', JSON.stringify(logs));
+    } catch(e){
+      console.warn('Activity logging warning:', e);
+    }
+  }
+
   // ── STUDENT SEARCH ────────────────────────────────────────
   const searchInput = $('searchInput');
   const searchBtn   = $('searchBtn');
@@ -807,6 +868,7 @@
       const idx = await getIndex();
       const matches = idx.filter(r => norm(r.name).includes(q));
       spinner.classList.remove('show');
+      logActivity('SEARCH', { query: searchInput.value.trim(), count: matches.length });
       if(matches.length === 0){
         setStatus('No certificate found for "' + q + '". Check spelling or contact the event host.', 'error');
       } else {
@@ -851,6 +913,7 @@
       if(!rec){ setStatus('That certificate could not be loaded.', 'error'); return; }
       currentRecord = rec;
       setStatus('');
+      logActivity('VIEW', { certId: id, name: rec.name, title: rec.title });
       certImg.src = rec.imageDataUrl;
       certImg.alt = 'Certificate for ' + rec.name;
       overlay.classList.add('open');
@@ -924,6 +987,7 @@
     a.href = currentRecord.imageDataUrl;
     a.download = slug(currentRecord.name) + '-certificate.' + ext;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    logActivity('DOWNLOAD', { certId: currentRecord.id, name: currentRecord.name, title: currentRecord.title });
     toast('Certificate downloaded ✓');
   });
 
@@ -1074,16 +1138,84 @@
       _allCerts = await getIndex();
       _allCerts.sort((a,b) => (b.uploadedAt||'') > (a.uploadedAt||'') ? 1 : -1);
     } catch(e){ _allCerts = []; }
-    updateStats();
     renderCertList(_allCerts);
+    await loadAnalytics();
   }
 
-  function updateStats(){
-    $('statTotal').textContent = _allCerts.length;
-    const today = new Date().toDateString();
-    const todayCount = _allCerts.filter(c => c.uploadedAt && new Date(c.uploadedAt).toDateString() === today).length;
-    $('statRecent').textContent = todayCount;
+  function formatTimeAgo(isoStr){
+    if(!isoStr) return '';
+    const date = new Date(isoStr);
+    const now = new Date();
+    const sec = Math.floor((now - date)/1000);
+    if(sec < 60) return 'Just now';
+    if(sec < 3600) return Math.floor(sec/60) + 'm ago';
+    if(sec < 86400) return Math.floor(sec/3600) + 'h ago';
+    return date.toLocaleDateString('en-US', {month:'short', day:'numeric'});
   }
+
+  async function loadAnalytics(){
+    $('statTotal').textContent = _allCerts.length;
+    let logs = [];
+    try {
+      const raw = await db.get('analytics-log');
+      if(raw) logs = JSON.parse(raw);
+    } catch(e){}
+    if(!Array.isArray(logs)) logs = [];
+
+    const searches  = logs.filter(l => l.type === 'SEARCH').length;
+    const views     = logs.filter(l => l.type === 'VIEW').length;
+    const downloads = logs.filter(l => l.type === 'DOWNLOAD').length;
+
+    $('statSearches').textContent = searches;
+    $('statViews').textContent    = views;
+    $('statDownloads').textContent = downloads;
+
+    const listEl = $('analyticsList');
+    if(!logs.length){
+      listEl.innerHTML = '<div class="empty-msg">No activity recorded yet.</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    logs.slice(0, 30).forEach(log => {
+      const row = document.createElement('div');
+      row.className = 'act-row fade-in';
+      let badgeCls = 'badge-search';
+      let badgeLabel = 'SEARCH';
+      let detailHtml = '';
+
+      if(log.type === 'SEARCH'){
+        badgeCls = 'badge-search';
+        badgeLabel = '🔍 SEARCH';
+        detailHtml = `Searched for <strong>"${escHtml(log.details?.query||'')}"</strong> (${log.details?.count||0} results)`;
+      } else if(log.type === 'VIEW'){
+        badgeCls = 'badge-view';
+        badgeLabel = '👁️ VIEW';
+        detailHtml = `Viewed certificate for <strong>${escHtml(log.details?.name||'')}</strong>`;
+      } else if(log.type === 'DOWNLOAD'){
+        badgeCls = 'badge-download';
+        badgeLabel = '⬇️ DOWNLOAD';
+        detailHtml = `Downloaded certificate for <strong>${escHtml(log.details?.name||'')}</strong>`;
+      }
+
+      row.innerHTML = `
+        <span class="badge-act ${badgeCls}">${badgeLabel}</span>
+        <div class="act-details">${detailHtml}</div>
+        <div class="act-time">${formatTimeAgo(log.timestamp)}</div>
+      `;
+      listEl.appendChild(row);
+    });
+  }
+
+  $('clearLogsBtn') && $('clearLogsBtn').addEventListener('click', async () => {
+    if(!confirm('Clear all analytics activity history?')) return;
+    try {
+      await db.del('analytics-log');
+      await loadAnalytics();
+      toast('Activity log cleared');
+    } catch(e){
+      toast('Failed to clear log', 'err');
+    }
+  });
 
   function renderCertList(certs){
     countBadge.textContent = certs.length;
