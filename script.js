@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PATHANAMTHITTA CHRONICLES : VOL 1 MANGA PORTAL (WITH ACTION DOODLES & ENGLISH SFX)
+   PATHANAMTHITTA CHRONICLES : VOL 1 MANGA PORTAL (PURE NARRATIVE EDITION)
    ========================================================================== */
 
 // 1. FIREBASE CONFIGURATION
@@ -431,7 +431,7 @@ function loadLibraryReleases() {
                     <span class="genre-chip">HISTORICAL</span>
                     <span class="genre-chip">ACTION</span>
                 </div>
-                <p>When ambitious feudal ruler Vinayak Thevalli Raja invades the sovereign borderland hills to monopolize the spice and timber routes, tribal chieftain Anandhu Moopan unites with guerrilla strategist Aslam and male scientist Ashley Allen.</p>
+                <p>An authoritative historical epic of the Kollam–Pathanamthitta borderland hills. Follow Anandhu Moopan, Sheik Aslam A Salam, Adrin the Cow, Sooraj Santhosh, Hari, scientist Ashley, and more through 10 chapters of war, betrayal, and revolution.</p>
                 <div class="card-read-btn">Read Volume 1</div>
             </div>
         </div>
@@ -519,297 +519,117 @@ function openUploadedRelease(index) {
     alert(`${rel.title} (${rel.volLabel})\n\nSynopsis:\n${rel.synopsis}\n\nAuthor: ${rel.author}`);
 }
 
-// 6. VOLUME 1 STORYBOARD WITH SVG ACTION DOODLES & ENGLISH SOUND NAMES
+// 6. VOLUME 1 STORYBOARD (PURE AUTHORITATIVE NARRATIVE EDITION — NO DIALOGUE BOXES OR DOODLES)
 const MANGA_ACTS = [
     {
         id: 1,
-        actNumber: "ACT I",
+        actNumber: "PROLOGUE",
         title: "The Sovereign Forest",
         location: "Kollam–Pathanamthitta Borderland Hills",
         image: "assets/cover.jpg",
         sfx: "ゴゴゴゴ",
         sfxEnglish: "RUMBLE!! • SOVEREIGN ECHO",
         sfxType: "rumble",
-        narrative: "For generations, the deep, uncharted hills of the borderlands between Kollam and Pathanamthitta belonged to the indigenous people. At the apex of this ancient community stood the Great Pathanamthitta Tribe, led by their formidable, revered chieftain, Anandhu Moopan. Holding the traditional title of Ooru Moopan, Anandhu was a leader of unyielding honor, fiercely dedicated to protecting his people's ancestral lands and forest autonomy.",
-        dialogues: [
-            {
-                speaker: "Anandhu Moopan",
-                faction: "Ooru Moopan",
-                text: "The soil of Pathanamthitta is baptized in the resilience of our ancestors! No crown from Thevally shall turn our sacred trees into coin!",
-                type: "shout",
-                scenario: "Anandhu Moopan stands tall on a cliffside overlooking the canopy of Pathanamthitta, clutching his ceremonial spear.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 30 60 L 150 20 L 270 60" stroke="#000" stroke-width="3" fill="none"/><line x1="150" y1="20" x2="150" y2="70" stroke="#e53935" stroke-width="4"/><polygon points="150,5 142,20 158,20" fill="#fbc02d" stroke="#000" stroke-width="2"/><circle cx="80" cy="50" r="10" fill="#1e293b"/><circle cx="220" cy="50" r="10" fill="#1e293b"/></svg>`
-            },
-            {
-                speaker: "Tribal Sentinel Kuttan",
-                faction: "Forest Guardian",
-                text: "Moopan! Heavy infantry banners bearing the royal seal of Vinayak Thevalli Raja are crossing the western river ford!",
-                type: "normal",
-                scenario: "A scout rushes through dense teak foliage, pointing toward distant armored columns.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 20 40 Q 80 10 140 40 T 260 40" stroke="#0f172a" stroke-width="3" fill="none"/><rect x="180" y="20" width="30" height="25" fill="#e53935"/><line x1="180" y1="15" x2="180" y2="65" stroke="#000" stroke-width="3"/><circle cx="60" cy="45" r="8" fill="#fbc02d"/><line x1="60" y1="53" x2="90" y2="30" stroke="#000" stroke-width="2"/></svg>`
-            }
-        ]
+        narrative: `For generations, the deep, uncharted hills of the borderlands between Kollam and Pathanamthitta belonged to the indigenous people. At the apex of this ancient community stood the Great Pathanamthitta Tribe, led by their formidable, revered chieftain, Anandhu Moopan. Holding the traditional title of Ooru Moopan, Anandhu was a leader of unyielding honor, fiercely dedicated to protecting his people’s ancestral lands and forest autonomy.<br><br>The peace of the hills was shattered when Vinayak Thevalli Raja, a ambitious feudal ruler associated with the prominent royal lineage of the Thevally region, sought to expand his kingdom. Desperate to monopolize the region's highly lucrative timber and spice routes, the Raja deployed his heavy infantry to conquer the highlands. However, the royal forces were no match for the terrain. Utilizing intimate knowledge of the rugged valleys, Moopan’s tribal warriors launched devastating ambushes, draining the royal treasury and fracturing the Raja's authority in a fierce regional revolt.`
     },
     {
         id: 2,
-        actNumber: "ACT II",
-        title: "The Royal Invasion",
-        location: "Western Teak River Ford",
+        actNumber: "ACT I",
+        title: "The Serpent in the Sanctuary",
+        location: "Sacred Boundary Stone Deep in the Forest",
         image: "assets/ambush.jpg",
         sfx: "ザッザッ",
-        sfxEnglish: "STOMP STOMP!! • ARMORED MARCH",
+        sfxEnglish: "STOMP STOMP!! • ARMORED AMBUSH",
         sfxType: "march",
-        narrative: "The peace of the hills was shattered when Vinayak Thevalli Raja, an ambitious feudal ruler associated with the prominent royal lineage of the Thevally region, sought to expand his kingdom. Desperate to monopolize the region's highly lucrative timber and spice routes, the Raja deployed his heavy infantry to conquer the highlands.",
-        dialogues: [
-            {
-                speaker: "Vinayak Thevalli Raja",
-                faction: "Thevally Ruler",
-                text: "These hills hold the richest teak and cardamom in the south! Flatten the tribal stockades and bring me Moopan's submission!",
-                type: "shout",
-                scenario: "Vinayak Thevalli Raja sits atop an armored war elephant, surrounded by mercenary matchlockmen.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 60 55 C 60 25, 140 25, 140 55 L 140 70 L 60 70 Z" fill="#64748b"/><path d="M 130 45 Q 160 30 170 55" stroke="#64748b" stroke-width="8" fill="none"/><circle cx="100" cy="15" r="8" fill="#fbc02d"/><line x1="90" y1="10" x2="110" y2="10" stroke="#e53935" stroke-width="3"/></svg>`
-            },
-            {
-                speaker: "Commander Thampan",
-                faction: "Royal Vanguard",
-                text: "My Lord, the highland mist is thickening. Our scouts report strange whistles echoing from the upper ridge...",
-                type: "normal",
-                scenario: "An armored officer peers anxiously into the swirling forest fog.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 30 30 Q 90 20 150 30 T 270 30" stroke="#94a3b8" stroke-width="3" stroke-dasharray="6,4" fill="none"/><path d="M 50 55 Q 150 45 250 55" stroke="#94a3b8" stroke-width="4" stroke-dasharray="8,6" fill="none"/><circle cx="150" cy="45" r="10" fill="#334155"/><line x1="150" y1="35" x2="165" y2="25" stroke="#fbc02d" stroke-width="2"/></svg>`
-            }
-        ]
+        narrative: `Realizing his military could not break the tribal front lines, Vinayak Thevalli Raja grew desperate. It was then that a foreign variable entered the court of Thevally: Alen Das, an ambitious, highly intelligent Portuguese trader. Alen was a man driven entirely by vice, luxury, and self-interest. He was a notorious womanizer and a deeply unideal character, possessing zero loyalty to any crown or code; he merely craved the exclusive monopolies over pepper and cardamom to fund his hedonistic lifestyle.<br><br>Alen proposed a strategy of asymmetric warfare: destroying the tribe from within through systematic deception. Venturing into the hills alone, Alen presented himself to the tribe as a rogue merchant fleeing the Raja’s tyranny. While his silver tongue earned him the trust of the elders, his reckless vices quickly surfaced, causing quiet friction as he used his status to seduce local women.<br><br>Despite his flaws, Alen's tactical mind was sharp. He brought rare foreign medicines to cure a village outbreak and shared false "weaknesses" regarding the Raja's palace defenses. Over months, he mapped the tribe’s hidden supply lines and identified their core strength: their absolute devotion to Anandhu Moopan.<br><br>The deception culminated when Alen convinced Moopan that the Raja was broken and ready to sign a peace treaty recognizing tribal autonomy. He arranged a midnight meeting at a sacred boundary stone deep in the forest, insisting both leaders arrive unarmed. Trusting the trader, Anandhu Moopan arrived with only a small ceremonial guard. It was a fatal trap. Alen Das had secretly guided the Raja’s elite marksmen into ambush positions using the tribe's own hidden paths. Surrounded and outgunned, the tribal guard was cut down, and the great chieftain Anandhu Moopan was brought to his knees, breaking the spine of the rebellion.`
     },
     {
         id: 3,
-        actNumber: "ACT III",
-        title: "The Guerrilla Resistance",
-        location: "The Misty Highland Defile",
+        actNumber: "ACT II",
+        title: "The Serpent's Ransom",
+        location: "Secluded Coastal Outpost",
         image: "assets/aslam.jpg",
         sfx: "シュパッ",
-        sfxEnglish: "SLASH!! • KATANA STRIKE",
+        sfxEnglish: "SLASH!! • VENGEANCE BLADE",
         sfxType: "slash",
-        narrative: "Anandhu Moopan refused to kneel. Utilizing the dense, misty terrain of Pathanamthitta, he organized a brilliant guerrilla defense. He was joined by a formidable ally: Aslam, a fierce, highly skilled rebel warrior from the lowlands who had long fought against the Raja's tyranny. Aslam brought tactical discipline and lethal swordsmanship to the tribal resistance.",
-        dialogues: [
-            {
-                speaker: "Sheik Aslam",
-                faction: "Guerrilla Blademaster",
-                text: "Thevally armor is heavy, but their throats are exposed. We strike from the high branches when the fog blinds their musketeers!",
-                type: "normal",
-                scenario: "Aslam crouches on a mossy bough with his curved katana blade drawn.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 40 60 Q 150 10 260 25" stroke="#000" stroke-width="4" fill="none"/><path d="M 70 50 L 230 15" stroke="#e53935" stroke-width="3"/><circle cx="70" cy="50" r="6" fill="#fbc02d"/></svg>`
-            },
-            {
-                speaker: "Anandhu Moopan",
-                faction: "Ooru Moopan",
-                text: "Let the forest be our fortress! Every root will trip them, and every ravine will become their prison!",
-                type: "shout",
-                scenario: "Anandhu raises his hand, initiating a barrage of bamboo traps.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><line x1="50" y1="70" x2="90" y2="20" stroke="#854d0e" stroke-width="5"/><line x1="120" y1="70" x2="160" y2="15" stroke="#854d0e" stroke-width="5"/><line x1="190" y1="70" x2="230" y2="25" stroke="#854d0e" stroke-width="5"/><polygon points="90,20 85,30 95,30" fill="#e53935"/><polygon points="160,15 155,25 165,25" fill="#e53935"/><polygon points="230,25 225,35 235,35" fill="#e53935"/></svg>`
-            }
-        ]
+        narrative: `With Moopan captured, the Raja reclaimed the hills, but Alen Das did not fade away. Driven by insatiable greed, the rogue trader turned on the King. Threatening to expose the dishonorable ambush that violated the sacred forest laws, Alen began to ruthlessly blackmail Vinayak Thevalli Raja, demanding exorbitant gold payments to fund his vices in the coastal port towns.<br><br>Desperate to eliminate the foreign extortionist, the Raja turned to his most loyal commander, Sheik Aslam A Salam. Aslam was a fierce warrior, but he harbored a secret, profound grief. Years prior, during a severe famine that struck the regional military garrisons, the royal court had abandoned his people. It was Anandhu Moopan who had saved Aslam's immediate kin, sending massive carts loaded with cucumbers and brinjals from the fertile hill farms. Bound by unyielding gratitude, Aslam had become a quiet admirer of Moopan’s noble character.<br><br>Ordered to execute Alen Das, Aslam saw an opportunity for dual retribution. He used the trader’s lustful nature against him, leaking rumors of a wealthy merchant convoy laden with fine wine and foreign women arriving at a secluded coastal outpost. Blinded by vice, Alen arrived with minimal security. From the shadows, Sheik Aslam and his elite guards closed the trap. In his final moments, as Alen realized he had been completely outmaneuvered, Aslam made sure the blackmailer knew his death was a final receipt of payment for the cucumbers, the brinjals, and the fallen honor of Anandhu Moopan.`
     },
     {
         id: 4,
-        actNumber: "ACT IV",
-        title: "Adrin & The Gomatha Assembly",
-        location: "Sacred Meadow of the Horned Bovines",
+        actNumber: "ACT III",
+        title: "The Fury of the Frontier",
+        location: "Regional Gomatha Pastures & Combat Zone",
         image: "assets/gomatha.jpg",
         sfx: "モーモー",
-        sfxEnglish: "MOOOOO!! • SACRED HERD ROAR",
+        sfxEnglish: "MOOOOO!! • SACRED HERD FURY",
         sfxType: "horn",
-        narrative: "The resistance also received crucial support from an unexpected syndicate: the Gomatha Association. This devout, agrarian collective revered and protected the region's cattle herds. Their undisputed leader was Adrin, a legendary, uniquely intelligent cow known among the tribes as the 'Great Mother.' Adrin's herd acted as living shields and early-warning sentinels.",
-        dialogues: [
-            {
-                speaker: "Adrin (The Great Cow)",
-                faction: "Gomatha Leader",
-                text: "MOOOOO!! (Translation: No warhorse shall trample our sacred pastures! Stand firm, horns lowered!)",
-                type: "shout",
-                scenario: "Adrin the cow stands majestically at the forefront of a thunderous cattle herd.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 80 40 Q 60 15 50 25" stroke="#000" stroke-width="4" fill="none"/><path d="M 120 40 Q 140 15 150 25" stroke="#000" stroke-width="4" fill="none"/><ellipse cx="100" cy="45" rx="25" ry="18" fill="#f8fafc" stroke="#000" stroke-width="2"/><circle cx="92" cy="42" r="3" fill="#000"/><circle cx="108" cy="42" r="3" fill="#000"/><ellipse cx="100" cy="54" rx="10" ry="6" fill="#fbc02d"/></svg>`
-            },
-            {
-                speaker: "Gomatha Warden Govindan",
-                faction: "Cattle Protector",
-                text: "When Adrin stamps her hooves, the earth trembles! We pledge our herds to Moopan's defense!",
-                type: "normal",
-                scenario: "A pastoral warden raises his wooden staff alongside the cattle syndicate.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><line x1="150" y1="10" x2="150" y2="70" stroke="#854d0e" stroke-width="4"/><circle cx="150" cy="10" r="7" fill="#fbc02d" stroke="#000" stroke-width="2"/><path d="M 70 65 Q 150 55 230 65" stroke="#16a34a" stroke-width="4" fill="none"/></svg>`
-            }
-        ]
+        narrative: `The escalating conflict between the royal forces, the rogue mercenaries, and the remaining tribal factions began to leak into the surrounding valleys, claiming innocent collateral damage. Among the casualties was Adrin, the beloved cow of a passionate local cattle farmer named Sooraj Santhosh. Adrin was caught in the crossfire of a chaotic skirmish and tragically killed. Enraged by the loss and refusing to accept it as a mere consequence of war, Sooraj vowed vengeance.<br><br>Sooraj sought out Hari, the influential leader of the regional Gomatha Association. To Hari and his followers, the cow was not property—she was a living deity. Viewing Adrin’s death as the ultimate sacrilege, Hari mobilized a heavily armed vigilante vanguard of cattle protectors.<br><br>Driven by Sooraj’s grief and Hari’s ideological fervor, this volatile new faction marched directly into the combat zone. They completely disrupted the tactical chess match being played by Sheik Aslam and the remnants of Moopan's tribe, turning the political conflict into a multi-front war fueled by agrarian revolt and spiritual blood-feuds.`
     },
     {
         id: 5,
-        actNumber: "ACT V",
-        title: "The Envoy's Humiliation",
-        location: "Ooru Council Clearings",
+        actNumber: "ACT IV",
+        title: "The Fatal Miscalculation",
+        location: "Cleared Junction Deep in the Forest",
         image: "assets/standoff.jpg",
         sfx: "ドドン",
-        sfxEnglish: "BOOM!! • STANDOFF THUNDER",
+        sfxEnglish: "BOOM!! • DIPLOMATIC COLLAPSE",
         sfxType: "boom",
-        narrative: "Frustrated by mounting casualties in the hills, the Raja sent a royal envoy to offer Anandhu Moopan a bribe of gold and lowland titles in exchange for surrender. Anandhu publicly burned the royal edict before the assembled tribes and Gomatha elders. He vowed that Pathanamthitta would remain forever sovereign.",
-        dialogues: [
-            {
-                speaker: "Royal Envoy Pillai",
-                faction: "Diplomatic Emissary",
-                text: "Chieftain! The Raja offers you three sacks of gold and the title of Forest Viceroy if you lay down your spears!",
-                type: "normal",
-                scenario: "A silken-robed emissary extends a casket of coins in the tribal circle.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><rect x="110" y="30" width="80" height="35" rx="4" fill="#fbc02d" stroke="#000" stroke-width="2"/><line x1="110" y1="45" x2="190" y2="45" stroke="#000" stroke-width="2"/><circle cx="150" cy="45" r="6" fill="#e53935"/></svg>`
-            },
-            {
-                speaker: "Anandhu Moopan",
-                faction: "Ooru Moopan",
-                text: "Take your gold back to the plains! We do not trade the graves of our mothers for the chains of a tyrant!",
-                type: "shout",
-                scenario: "Anandhu thrusts the parchment edict into the council bonfire.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 130 65 Q 150 20 170 65 Z" fill="#e53935"/><path d="M 140 65 Q 150 35 160 65 Z" fill="#fbc02d"/><rect x="120" y="25" width="35" height="20" fill="#f8fafc" stroke="#000" stroke-width="1" transform="rotate(-15 120 25)"/><line x1="100" y1="70" x2="200" y2="70" stroke="#475569" stroke-width="4"/></svg>`
-            }
-        ]
+        narrative: `As the borderlands spiraled out of control, a regional neutral council attempted to halt the imminent bloodshed. They sent forward an envoy, Sidharth Seeju, a diplomat known for an eccentric personality and highly unorthodox communication style. Sidharth foolishly believed that the intense atmosphere of a war zone could be defused with a light, humorous touch rather than rigid political treaties.<br><br>Sidharth arranged a high-stakes standoff at a cleared junction deep in the forest. On one side stood Sheik Aslam and his battle-hardened veterans; on the other stood Hari and an enraged Sooraj Santhosh. Stepping into the dead space between the armies, Sidharth raised his hands to broker peace.<br><br>However, instead of addressing the political crisis, Sidharth attempted to break the ice with an incredibly poorly timed, tone-deaf, and highly offensive joke regarding the death of Adrin the cow. The words had barely left his mouth when the fragile diplomatic immunity shattered. Enraged by the blatant disrespect to their fallen deity, Hari and Sooraj's vanguard did not wait for negotiations. Before Sheik Aslam could intervene, a swift volley of arrows and blades cut Sidharth Seeju down instantly. His mission ended in blood, and all remaining restraint on the battlefield vanished.`
     },
     {
         id: 6,
-        actNumber: "ACT VI",
-        title: "Ashley Allen & The Timber Rockets",
-        location: "Highland Forest Arsenal",
+        actNumber: "ACT V",
+        title: "The Timber Rocket and the Tragic Legend",
+        location: "The Smoky Front Line & Rocket Batteries",
         image: "assets/ashley_male.jpg",
         sfx: "ズバババ",
         sfxEnglish: "WHOOSH-BANG!! • TIMBER ROCKET BARRAGE",
         sfxType: "rocket",
-        narrative: "As the Raja's siege machines approached, the resistance unveiled their greatest technological marvel, designed by ASHLEY ALLEN—a brilliant male scientist, inventor, and master forest engineer of Pathanamthitta. Utilizing iron-reinforced hollow teak logs charged with saltpeter and sulfur, male scientist Ashley constructed devastating 'Timber Rockets' that shattered the enemy formation.",
-        dialogues: [
-            {
-                speaker: "Ashley Allen",
-                faction: "Male Scientist & Inventor",
-                text: "The iron-banded teak chambers are primed! When I drop the torch, these timber rockets will turn their siege shields into splinters!",
-                type: "shout",
-                scenario: "Male scientist Ashley Allen adjusts the trajectory of an iron-clad wooden rocket launcher overlooking the gorge.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><rect x="40" y="35" width="120" height="18" rx="4" fill="#854d0e" stroke="#000" stroke-width="2" transform="rotate(-15 40 35)"/><polygon points="155,5 180,10 155,20" fill="#e53935"/><path d="M 20 60 Q 30 50 40 50" stroke="#e53935" stroke-width="3" fill="none"/><circle cx="30" cy="55" r="5" fill="#fbc02d"/></svg>`
-            },
-            {
-                speaker: "Sheik Aslam",
-                faction: "Guerrilla Blademaster",
-                text: "Brilliant work, Ashley! Their matchlockmen won't know whether thunder or lightning hit them!",
-                type: "normal",
-                scenario: "Aslam watches with admiration as Ashley lights the fuse of a multi-barrel timber barrage.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><line x1="30" y1="50" x2="250" y2="25" stroke="#fbc02d" stroke-width="3" stroke-dasharray="8,6"/><circle cx="260" cy="23" r="14" fill="#e53935"/><circle cx="260" cy="23" r="8" fill="#fbc02d"/></svg>`
-            }
-        ]
+        narrative: `With an all-out war declared, the rebel alliance gained an unexpected technological advantage. Ashley, a brilliant but wildly eccentric regional scientist who had been working in isolation on the fringes of the forest, joined the fray. Lacking conventional metals, Ashley had successfully engineered a volatile, destructive artillery weapon constructed entirely out of reinforced timber and localized chemical ash propellants. Aligning himself with Sheik Aslam, Ashley brought his timber rocket batteries to the front line to provide devastating fire support against the monarchy.<br><br>Seeing his general turn against him and realizing the threat of Ashley's rockets, Vinayak Thevalli Raja summoned his ultimate weapon: Alen Baiju. Famed across the southern principalities, Alen Baiju was a legendary warrior known for lethal speed and unmatched tactical genius. He was also a man of remarkably short height. Taking command of the Raja’s vanguard, Alen Baiju deployed the elite infantry to intercept Ashley’s rocket pads, rapidly shifting the tide of battle back to the crown.<br><br>However, in the thick smoke and chaos of the frontline, tragedy struck. Standing low to the ground amidst the fog of war, Alen Baiju stepped directly behind one of his own army's massive war elephants. Because of his short stature, the mahout high above could not see him, and the colossal beast took a heavy backward step, stomping the legendary warrior to death instantly. The sudden, bizarre demise of their greatest champion threw the royal ranks into absolute disarray just as Ashley ignited the first full rocket barrages.`
     },
     {
         id: 7,
-        actNumber: "ACT VII",
-        title: "The Elephant Stampede",
-        location: "Eastern Valley Gorge",
+        actNumber: "ACT VI",
+        title: "The Royal Coalition",
+        location: "Southern Horizons & Imperial Front",
         image: "assets/elephant.jpg",
         sfx: "ドガガガ",
-        sfxEnglish: "TRUMPET-CRASH!! • ELEPHANT CHARGE",
+        sfxEnglish: "TRUMPET-CRASH!! • IMPERIAL PHALANX",
         sfxType: "trumpet",
-        narrative: "Caught in Ashley Allen's rocket barrage and blinded by the smoke, the Raja's armored war elephants panicked. Guided by Adrin and the Gomatha herdsmen, wild mountain elephants joined the fray, charging down the valley and crushing the Raja's artillery train.",
-        dialogues: [
-            {
-                speaker: "Gomatha Warden Govindan",
-                faction: "Cattle Protector",
-                text: "The mountain tuskers have answered Adrin's call! Drive them straight through the royal center!",
-                type: "shout",
-                scenario: "Wild mountain bull elephants charge alongside Adrin's cattle herd.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 60 50 C 60 20, 130 20, 130 50 L 130 65 L 60 65 Z" fill="#475569"/><path d="M 120 45 Q 160 35 150 65" stroke="#475569" stroke-width="6" fill="none"/><path d="M 125 45 Q 145 35 155 35" stroke="#f8fafc" stroke-width="3" fill="none"/></svg>`
-            },
-            {
-                speaker: "Thevally Heavy Musketeer",
-                faction: "Royal Infantry",
-                text: "Our lines are broken! The elephants are turning on our own carriages! Fall back to the river!",
-                type: "shout",
-                scenario: "Royal infantry scatter in terror as elephants trample artillery wagons.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><circle cx="100" cy="55" r="14" fill="none" stroke="#000" stroke-width="3"/><circle cx="180" cy="55" r="14" fill="none" stroke="#000" stroke-width="3"/><line x1="80" y1="55" x2="200" y2="35" stroke="#854d0e" stroke-width="5"/><path d="M 130 20 L 150 40 L 170 20" stroke="#e53935" stroke-width="4" fill="none"/></svg>`
-            }
-        ]
+        narrative: `Just as the royal lines began to fracture under Ashley’s devastating timber rocket fire, a thunderous blare of conch shells echoed from the southern horizons. Recognizing that the fall of the Thevalli territory would destabilize the realm, the supreme sovereign stepped onto the battlefield: His Great Holy Highness, the Travancore King Adith. King Adith brought with him the immense wealth of the central state treasury and its elite standing regiments.<br><br>Marching alongside King Adith was his most ruthless military commander, the notorious Dictator Niranjan. Known for his iron-fisted rule and zero-tolerance policy for insurrections, Niranjan deployed a terrifying, highly organized war machine. His forces moved in flawless phalanx formations, equipped with heavy artillery and specialized anti-siege shields designed specifically to withstand experimental projectiles.<br><br>By uniting the remnants of the Thevalli guard, the supreme imperial forces of King Adith, and the disciplined vanguard of Dictator Niranjan, the royalists established a massive, overwhelming coalition force that completely halted the rebel momentum.`
     },
     {
         id: 8,
-        actNumber: "ACT VIII",
-        title: "Clash of the Silver Giants",
-        location: "The Sovereign River Ridge",
+        actNumber: "ACT VII",
+        title: "The Gathering of the Bloodline and the Silver Giant",
+        location: "The Grand Opposition Battlefield",
         image: "assets/giant.jpg",
         sfx: "カキィィン",
-        sfxEnglish: "CLANG-CLASH!! • SILVER STEEL COLLISION",
+        sfxEnglish: "CLANG-CLASH!! • SILVER GIANT STEEL",
         sfxType: "clash",
-        narrative: "In a final desperate gamble, Vinayak Thevalli Raja unleashed his elite mercenary vanguard—the Das Army Syndicate, clad in silver steel plate armor. They clashed with Aslam and Anandhu Moopan along the river ridge in a battle of epic swordsmanship.",
-        dialogues: [
-            {
-                speaker: "General Das",
-                faction: "Das Army Syndicate",
-                text: "No tribal spear can pierce forged silver plate! Prepare to be crushed beneath my war-mace!",
-                type: "shout",
-                scenario: "A giant warrior clad in silver plate armor swings a colossal spiked mace toward Aslam.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><circle cx="200" cy="30" r="16" fill="#94a3b8" stroke="#000" stroke-width="3"/><line x1="60" y1="65" x2="190" y2="35" stroke="#475569" stroke-width="6"/><line x1="185" y1="15" x2="215" y2="45" stroke="#000" stroke-width="2"/><line x1="185" y1="45" x2="215" y2="15" stroke="#000" stroke-width="2"/></svg>`
-            },
-            {
-                speaker: "Sheik Aslam",
-                faction: "Guerrilla Blademaster",
-                text: "Armor only slows your swing, Das! Let's see if your steel can withstand a blade forged in rebellion!",
-                type: "shout",
-                scenario: "Aslam leaps into the air, katana gleaming as he parries the spiked mace strike.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 50 65 L 240 20" stroke="#e53935" stroke-width="4"/><circle cx="145" cy="42" r="12" fill="#fbc02d" opacity="0.8"/><line x1="135" y1="32" x2="155" y2="52" stroke="#fff" stroke-width="3"/><line x1="135" y1="52" x2="155" y2="32" stroke="#fff" stroke-width="3"/></svg>`
-            }
-        ]
+        narrative: `The battlefield fractured even further as the past actions of Alen Das caught up with the present. Although Alen Das had been executed, his lifetime of international womanizing had left behind a volatile legacy. Across the globe, dozens of his illegitimate sons learned of his death. Bound by blood and a desire to claim the lucrative spice trade routes, they united to form a powerful mercenary syndicate known as the Das Army.<br><br>The undisputed leader of this global brotherhood was Midhun Money, a cold, hyper-powerful figure who controlled the syndicate’s massive offshore wealth. Midhun's arrival was fueled by a bitter, personal vendetta: years prior, Hari and the Gomatha Association had aggressively looted and dismantled Midhun’s mass-production chicken farm to claim the land for sacred pastures. To ensure total annihilation of his enemies, Midhun brought along Francis, a terrifying, 7-foot-tall silver giant armored in custom-forged plate-mail that effortlessly deflected standard blades.<br><br>Refusing to bow to the King or the rebels, the powerful Das Army established a massive, heavily armed Grand Opposition, forming a destructive third front on the battlefield. Midhun Money unleashed the towering Francis directly onto Hari’s forces, while the rest of the Das brothers prepared to hunt down Sheik Aslam to avenge their father.`
     },
     {
         id: 9,
-        actNumber: "ACT IX",
-        title: "Victory of Pathanamthitta",
-        location: "The Sovereign Hill Summit",
+        actNumber: "ACT VIII",
+        title: "The Apocalypse of the Frontier",
+        location: "The Blood-Soaked Valley & Sovereign Archives",
         image: "assets/victory.jpg",
         sfx: "ワアアア",
-        sfxEnglish: "ROAR!! • VICTORY CHEER",
+        sfxEnglish: "ROAR!! • FINAL SOVEREIGN VICTORY",
         sfxType: "victory",
-        narrative: "With his army routed and his mercenary vanguard defeated, Vinayak Thevalli Raja was forced to sound the retreat. Across the sovereign hills, the horns of victory resounded. Anandhu Moopan, Aslam, male scientist Ashley Allen, and Adrin stood triumphant under the golden morning sun.",
-        dialogues: [
-            {
-                speaker: "Anandhu Moopan",
-                faction: "Ooru Moopan • Victorious Chieftain",
-                text: "Let every kingdom from Kollam to Travancore hear our horns! Pathanamthitta belongs to her people, forever unconquered!",
-                type: "shout",
-                scenario: "Anandhu Moopan raises his spear high on the summit as sunlight breaks over cheering tribes.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><path d="M 20 70 Q 150 40 280 70" fill="#1e293b"/><line x1="150" y1="50" x2="150" y2="10" stroke="#fbc02d" stroke-width="4"/><polygon points="150,5 142,15 158,15" fill="#e53935"/><circle cx="80" cy="25" r="12" fill="#fbc02d" opacity="0.6"/></svg>`
-            },
-            {
-                speaker: "Ashley Allen",
-                faction: "Male Scientist & Inventor",
-                text: "Our forests are safe, Moopan! And our inventions stand ready should any tyrant dare cross our borders again!",
-                type: "normal",
-                scenario: "Male scientist Ashley Allen smiles, resting his hand on a rocket launcher alongside Aslam and Adrin.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><circle cx="100" cy="40" r="15" fill="#3b82f6"/><line x1="130" y1="60" x2="220" y2="35" stroke="#854d0e" stroke-width="5"/><polygon points="225,30 235,35 225,40" fill="#e53935"/></svg>`
-            }
-        ]
+        narrative: `The grand war erupted in an apocalyptic clash of three massive factions. Dictator Niranjan’s iron phalanx clashed with the global mercenaries, while Ashley’s timber rockets screamed through the sky, exploding into clouds of chemically weaponized ash.<br><br>Amidst this chaos, a horrifying misunderstanding took place on the rebel frontline. Desperate to feed his starving troops, Sheik Aslam ordered a communal cookfire. In the blinding smoke, his men mistakenly slaughtered and began roasting a stray cow over the open flames. Watching from across the valley, Sooraj Santhosh witnessed this supreme sacrilege. The intense mental torture of seeing the animal he worshiped being roasted by his own allies broke his mind. Paralyzed by pure spiritual despair, Sooraj Santhosh’s heart failed, and he collapsed and died on the spot.<br><br>Witnessing Sooraj's death, Hari fell into a state of unhinged fury, leading the Gomatha Association in a suicidal charge directly into Midhun Money's Grand Opposition. As Francis the silver giant trampled the vanguard, Ashley redirected a heavy timber rocket, striking the 7-foot giant square in the chest. The volatile blast cracked the silver armor, allowing Hari to bring the giant down. Breathing his last, Hari breached the lines and eliminated Midhun Money, completely shattering the Das Army at the cost of his own life.<br><br>With the Grand Opposition wiped out, Sheik Aslam launched a brilliant counter-offensive that outmaneuvered Dictator Niranjan's iron phalanx, causing the collapse of the royal army. Charging through the broken lines, Aslam confronted Vinayak Thevalli Raja and King Adith. Recognizing that the war was born from royal greed and the theft of tribal land, Aslam executed Vinayak Thevalli Raja for his historical crimes. He forced the supreme Travancore King Adith to surrender and sign a binding treaty, returning the sovereign rights of the Pathanamthitta forests to the surviving elders of Anandhu Moopan’s tribe. The rightful victory was achieved, and the true, gritty account was written down on fragile paper ledgers, buried deep within the un-digitized archives of the local government library.`
     },
     {
         id: 10,
-        actNumber: "ACT X",
-        title: "Post-Credit: Shadows of the Shogun",
-        location: "Secret Temple of the Shogun Assassins",
+        actNumber: "POST-CREDIT",
+        title: "The Embers of New Conquest",
+        location: "Secluded Valley Outpost of Scientist Ashley",
         image: "assets/assassins.jpg",
         sfx: "スウウウ",
-        sfxEnglish: "SHHH... SLASH!! • SILENT SHADOW BLADE",
+        sfxEnglish: "SHHH... SLASH!! • SILENT ASSASSIN BLADE",
         sfxType: "shadow",
-        narrative: "Though the borderland hills celebrated their hard-won peace, a darker threat loomed in the East. In a hidden temple shrouded in incense, a syndicate of silent Shadow Assassins and Ronin samurai, hired by disgraced lowland merchants, sharpened their obsidian katanas.",
-        dialogues: [
-            {
-                speaker: "Shadow Shogun Kage",
-                faction: "Shadow Syndicate",
-                text: "Thevally's Raja was arrogant and loud. When we strike Pathanamthitta, they will not hear the blade until the silence takes them...",
-                type: "thought",
-                scenario: "A masked samurai shogun kneels in a candlelit shrine, drawing an obsidian katana.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><rect x="110" y="20" width="80" height="40" rx="4" fill="#0f172a" stroke="#e53935" stroke-width="2"/><line x1="60" y1="50" x2="240" y2="30" stroke="#e53935" stroke-width="3"/><circle cx="150" cy="25" r="4" fill="#fbc02d"/></svg>`
-            },
-            {
-                speaker: "Ronin Assassin Shinobi",
-                faction: "Elite Shadow Guild",
-                text: "Our target is the male scientist Ashley Allen and the tribal Moopan. The Sovereign Forest shall fall in silence.",
-                type: "normal",
-                scenario: "Silhouetted ninja warriors leap from temple roofs under a red moon.",
-                doodleSvg: `<svg viewBox="0 0 300 80"><circle cx="230" cy="35" r="18" fill="#b71c1c" opacity="0.8"/><polygon points="80,65 110,35 140,65" fill="#0f172a"/><polygon points="160,65 190,25 220,65" fill="#0f172a"/><circle cx="190" cy="18" r="5" fill="#fff"/></svg>`
-            }
-        ]
+        narrative: `The smoke of the grand war had finally settled over the blood-soaked hills. Deep within a secluded valley outpost, the brilliant scientist Ashley stood alone under the dim light of an oil lamp, quietly packing away his remaining blueprints and the charred schematics of his legendary timber-and-ash rockets. He prepared to retire into peace.<br><br>Suddenly, the air inside the outpost grew deathly cold. From the darkness of the doorway stepped Nabeel, a silent, shadow-bound assassin wrapped in midnight-black garments, gripping a dual-pronged thrusting blade. Simultaneously, blocking the main exit, emerged Habeeb Ikachi, a terrifying ronin samurai clad in dark, battle-scarred iron armor, his hand resting tightly on the hilt of a razor-sharp katana.<br><br>Ashley spun around, his eyes widening. "Who sent you? The King is broken! The war is over!"<br><br>"The war for this forest is over, scientist," Nabeel’s voice whispered from beneath his mask. "But a grander conquest is just beginning."<br><br>Before Ashley could reach for an ignition fuse, Nabeel vanished into a blur of motion. A silent, blinding strike pierced the air. In the exact same breath, Habeeb Ikachi’s katana left its scabbard with a sharp, metallic ring, executing a flawless, lightning-fast crescent slash.<br><br>Ashley gasped, stepping backward as his master blueprints slipped from his fingers, splashing into the pool of blood spreading across the floor. He collapsed into the shadows, dead.<br><br>Habeeb Ikachi calmly wiped the blood from his blade and sheathed it. Nabeel stepped over the fallen scientist, reaching down to scoop up the master schematics of the timber rocket technology—the ultimate weapon of long-range devastation. Looking out into the vast, unprotected horizon stretching far beyond the borders of Travancore, Habeeb Ikachi gave a cold, ruthless nod to his assassin partner. Armed with the weapon of the gods, the assassin Nabeel and the samurai Habeeb Ikachi turned their backs on the dead ashes of Pathanamthitta, embarking on a terrifying new journey of global conquest.<br><br>The saga of the frontier has ended, and a new journey of global conquest has begun.`
     }
 ];
 
@@ -940,7 +760,7 @@ function setupCommentHandlers() {
     customUrlInput?.addEventListener("input", updateCommentButtonState);
 }
 
-// 8. BOOK READER RENDERING WITH ACTION DOODLES & ENGLISH SOUND EFFECTS
+// 8. BOOK READER RENDERING (PURE NARRATIVE EDITION — ZERO DIALOGUES OR DOODLES)
 function renderBookReader(index) {
     if (index < 0) index = 0;
     if (index >= MANGA_ACTS.length) index = MANGA_ACTS.length - 1;
@@ -972,26 +792,6 @@ function renderBookReader(index) {
 
             <div class="narrator-box">
                 ${act.narrative}
-            </div>
-
-            <div class="dialogue-grid">
-                ${act.dialogues.map(dlg => `
-                    <div class="speech-bubble ${dlg.type}" onclick="playComicSoundEffect('${act.sfxType}', '${act.sfxEnglish}')">
-                        <div class="speaker-name">
-                            <span>💬 ${dlg.speaker}</span>
-                            <span class="faction-tag">${dlg.faction}</span>
-                        </div>
-                        <p class="dialogue-text">"${dlg.text}"</p>
-                        <div class="dialogue-doodle-scenario-wrapper">
-                            <div class="doodle-canvas-box" title="Action Sequence Sketch">
-                                ${dlg.doodleSvg || ''}
-                            </div>
-                            <div class="dialogue-scenario-box">
-                                <span>🎨 ${dlg.scenario}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
             </div>
         </div>
     `;
@@ -1028,7 +828,7 @@ function jumpToAct(index) {
     if (currentViewMode !== 'book') switchMode('book');
 }
 
-// 9. WEBTOON STREAM RENDERING
+// 9. WEBTOON STREAM RENDERING (PURE NARRATIVE EDITION — ZERO DIALOGUES OR DOODLES)
 function renderWebtoonStream() {
     const container = document.getElementById("webtoon-container");
     if (!container) return;
@@ -1055,95 +855,139 @@ function renderWebtoonStream() {
             <div class="narrator-box">
                 ${act.narrative}
             </div>
-
-            <div class="dialogue-grid">
-                ${act.dialogues.map(dlg => `
-                    <div class="speech-bubble ${dlg.type}" onclick="playComicSoundEffect('${act.sfxType}', '${act.sfxEnglish}')">
-                        <div class="speaker-name">
-                            <span>💬 ${dlg.speaker}</span>
-                            <span class="faction-tag">${dlg.faction}</span>
-                        </div>
-                        <p class="dialogue-text">"${dlg.text}"</p>
-                        <div class="dialogue-doodle-scenario-wrapper">
-                            <div class="doodle-canvas-box" title="Action Sequence Sketch">
-                                ${dlg.doodleSvg || ''}
-                            </div>
-                            <div class="dialogue-scenario-box">
-                                <span>🎨 ${dlg.scenario}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
         </div>
     `).join('');
 }
 
-// 10. CHARACTER CODEX
+// 10. CHARACTER CODEX (EXACT 16 AUTHORITATIVE CHARACTERS)
 const CHARACTERS_DATABASE = [
     {
         name: "Anandhu Moopan",
         faction: "tribal",
         factionLabel: "Pathanamthitta Tribe",
         title: "Ooru Moopan • Apex Chieftain",
-        desc: "The formidable, revered leader of the Great Pathanamthitta Tribe. A warrior of unyielding honor and tactical brilliance.",
-        stats: { strength: "98", leadership: "100", honor: "100" }
-    },
-    {
-        name: "Ashley Allen",
-        faction: "tribal",
-        factionLabel: "Allied Resistance",
-        title: "Male Scientist & Master Engineer",
-        desc: "A brilliant male scientist, inventor, and master forest engineer who joined Moopan's rebellion, inventing the iron-reinforced 'Timber Rockets'.",
-        stats: { intellect: "100", engineering: "99", firepower: "95" }
-    },
-    {
-        name: "Sheik Aslam",
-        faction: "tribal",
-        factionLabel: "Guerrilla Blademaster",
-        title: "Rebel Blademaster of the Lowlands",
-        desc: "A legendary swordsman who fought the Raja's tyranny for decades before uniting his forces with Moopan.",
-        stats: { agility: "97", swordsmanship: "99", tactics: "94" }
-    },
-    {
-        name: "Adrin (The Great Cow)",
-        faction: "gomatha",
-        factionLabel: "Gomatha Association",
-        title: "The Great Mother • Sacred Bovine Leader",
-        desc: "An extraordinarily intelligent cow revered across the southern hills. Leads the cattle syndicate that serves as sentinels.",
-        stats: { wisdom: "96", loyalty: "100", stampede: "98" }
+        desc: "The formidable, revered leader of the Great Pathanamthitta Tribe. A leader of unyielding honor fiercely dedicated to protecting his people's ancestral lands and forest autonomy.",
+        stats: { honor: "100", leadership: "100", resilience: "98" }
     },
     {
         name: "Vinayak Thevalli Raja",
         faction: "royal",
         factionLabel: "Thevally Royalty",
         title: "Ambitious Feudal Conqueror",
-        desc: "A ruthless lowland ruler determined to annex the Pathanamthitta hills to monopolize the spice and timber routes.",
-        stats: { ambition: "98", wealth: "96", cruelty: "91" }
+        desc: "An ambitious feudal ruler of the prominent royal lineage of Thevally who sought to expand his kingdom and monopolize the timber and spice routes.",
+        stats: { ambition: "98", power: "95", cruelty: "92" }
     },
     {
-        name: "General Das",
+        name: "Alen Das",
         faction: "mercenary",
-        factionLabel: "Das Army Syndicate",
-        title: "Commander of the Silver Steel Plate Vanguard",
-        desc: "Warlord of an elite mercenary syndicate clad in silver plate armor. Wields a colossal spiked war-mace in battle.",
-        stats: { strength: "99", armor: "98", brutality: "93" }
+        factionLabel: "Portuguese Rogue Trader",
+        title: "Ambitious Trader & Deceitful Blackmailer",
+        desc: "An intelligent Portuguese trader driven by vice, luxury, and self-interest. Used systematic deception to lure Moopan into an ambush, then blackmailed the Raja for gold.",
+        stats: { deception: "100", greed: "100", tactics: "95" }
     },
     {
-        name: "Gomatha Warden Govindan",
+        name: "Sheik Aslam A Salam",
+        faction: "tribal",
+        factionLabel: "Loyal Commander & Rebel Blademaster",
+        title: "Avenger of Honor • Defender of Kin",
+        desc: "A fierce warrior who remembered Anandhu Moopan saving his kin with carts of cucumbers and brinjals during a famine. Lured and executed blackmailer Alen Das, later leading the rebel counter-offensive.",
+        stats: { swordsmanship: "100", loyalty: "100", gratitude: "100" }
+    },
+    {
+        name: "Sooraj Santhosh",
         faction: "gomatha",
         factionLabel: "Gomatha Association",
-        title: "Senior Cattle Protector",
-        desc: "A pastoral warrior who coordinates herd movements with Adrin and rallies mountain elephants to crush enemy artillery.",
-        stats: { devotion: "95", nature: "97", defense: "92" }
+        title: "Passionate Cattle Farmer",
+        desc: "A passionate cattle farmer who loved his cow Adrin. When Adrin was killed in the crossfire of war, Sooraj vowed vengeance and rallied the Gomatha Association.",
+        stats: { devotion: "99", grief: "98", agrarian: "95" }
     },
     {
-        name: "Shadow Shogun Kage",
+        name: "Adrin",
+        faction: "gomatha",
+        factionLabel: "Sacred Cattle Deity",
+        title: "The Beloved Cow of Sooraj Santhosh",
+        desc: "The beloved cow of farmer Sooraj Santhosh, revered as a living deity by Hari and the Gomatha Association. Her tragic death in battle ignited a multi-front agrarian blood-feud.",
+        stats: { divinity: "100", innocence: "100", reverence: "100" }
+    },
+    {
+        name: "Hari",
+        faction: "gomatha",
+        factionLabel: "Gomatha Association",
+        title: "Spiritual Leader of the Cattle Protectors",
+        desc: "The influential leader of the Gomatha Association who viewed Adrin as a living deity. Led a heavily armed vigilante vanguard, ultimately sacrificing his life to slay Midhun Money and the silver giant.",
+        stats: { zeal: "100", combat: "96", vengeance: "99" }
+    },
+    {
+        name: "Sidharth Seeju",
+        faction: "royal",
+        factionLabel: "Neutral Council Diplomat",
+        title: "Eccentric Envoy of Unorthodox Diplomacy",
+        desc: "An envoy from a regional neutral council who foolishly attempted to defuse a high-stakes standoff with an offensive joke about Adrin's death, resulting in his immediate demise.",
+        stats: { humor: "10", tact: "5", diplomacy: "20" }
+    },
+    {
+        name: "Ashley",
+        faction: "tribal",
+        factionLabel: "Rebel Scientist & Inventor",
+        title: "Eccentric Master of Timber Rockets",
+        desc: "A brilliant, wildly eccentric regional scientist who engineered volatile artillery weapons constructed entirely out of reinforced timber and chemical ash propellants.",
+        stats: { intellect: "100", innovation: "100", artillery: "98" }
+    },
+    {
+        name: "Alen Baiju",
+        faction: "royal",
+        factionLabel: "Thevally Vanguard",
+        title: "Legendary Short-Statured Champion",
+        desc: "Famed across southern principalities for lethal speed and tactical genius. Because of his remarkably short height, a war elephant's mahout could not see him, and he was accidentally stomped to death.",
+        stats: { speed: "99", tactics: "97", stature: "25" }
+    },
+    {
+        name: "King Adith",
+        faction: "royal",
+        factionLabel: "Supreme Sovereign of Travancore",
+        title: "His Great Holy Highness",
+        desc: "The supreme sovereign of Travancore who brought central treasury wealth and standing regiments to save the realm, eventually signing the binding treaty returning tribal forest rights.",
+        stats: { sovereignty: "100", wealth: "100", authority: "98" }
+    },
+    {
+        name: "Dictator Niranjan",
+        faction: "royal",
+        factionLabel: "Travancore Imperial Guard",
+        title: "Iron-Fisted Commander of the Phalanx",
+        desc: "A notorious military dictator known for iron-fisted rule. Deployed flawless phalanx formations with heavy artillery and specialized anti-siege shields against Ashley's rockets.",
+        stats: { discipline: "100", defense: "99", cruelty: "96" }
+    },
+    {
+        name: "Midhun Money",
+        faction: "mercenary",
+        factionLabel: "Das Army Brotherhood",
+        title: "Offshore Wealth Warlord",
+        desc: "An illegitimate son of Alen Das who united his brothers into the Das Army. Harbored a bitter vendetta against Hari for looting his mass-production chicken farm.",
+        stats: { wealth: "99", vendetta: "98", power: "97" }
+    },
+    {
+        name: "Francis",
+        faction: "mercenary",
+        factionLabel: "Das Army Brotherhood",
+        title: "7-Foot-Tall Silver Giant",
+        desc: "A terrifying 7-foot-tall juggernaut armored in custom-forged plate-mail that effortlessly deflected blades. Cracked by a timber rocket and brought down by Hari.",
+        stats: { height: "100", armor: "99", strength: "99" }
+    },
+    {
+        name: "Nabeel",
         faction: "shadow",
         factionLabel: "Shadow Assassins",
-        title: "Grandmaster of the Obsidian Blade",
-        desc: "A masked samurai shogun hired by disgraced lowland merchants to assassinate Moopan and Ashley Allen in silence.",
-        stats: { stealth: "100", lethality: "98", shadow: "99" }
+        title: "Silent Assassin of the Midnight Blade",
+        desc: "A silent, shadow-bound assassin wrapped in midnight-black garments who wields a dual-pronged thrusting blade. Executed scientist Ashley to steal the rocket schematics.",
+        stats: { stealth: "100", speed: "99", lethality: "99" }
+    },
+    {
+        name: "Habeeb Ikachi",
+        faction: "shadow",
+        factionLabel: "Shadow Assassins",
+        title: "Terrifying Ronin Samurai",
+        desc: "A terrifying ronin samurai clad in battle-scarred iron armor wielding a razor-sharp katana. Partnered with Nabeel to seize the timber rocket technology for global conquest.",
+        stats: { swordsmanship: "100", ruthlessness: "99", conquest: "100" }
     }
 ];
 
@@ -1210,7 +1054,7 @@ function openCharacterModal(index) {
     modal.classList.remove("hidden");
 }
 
-// 11. MAP & TIMELINE
+// 11. MAP & TIMELINE (100% TRUE TO AUTHORITATIVE STORYLANDS)
 function renderInteractiveMap() {
     const wrapper = document.getElementById("svg-map-wrapper");
     const details = document.getElementById("map-location-details");
@@ -1223,23 +1067,23 @@ function renderInteractiveMap() {
             <path d="M 0 250 Q 200 280 400 240 T 800 260" stroke="#1976d2" stroke-width="12" fill="none" opacity="0.6"/>
             
             <g class="map-marker" onclick="selectMapMarker(0)" style="cursor:pointer;">
-                <circle cx="220" cy="180" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
-                <text x="245" y="185" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">1. Ooru Council Sanctuary</text>
+                <circle cx="200" cy="170" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
+                <text x="225" y="175" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">1. Sacred Boundary Stone</text>
             </g>
 
             <g class="map-marker" onclick="selectMapMarker(1)" style="cursor:pointer;">
-                <circle cx="380" cy="245" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
-                <text x="405" y="250" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">2. Teak River Ford</text>
+                <circle cx="380" cy="390" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
+                <text x="405" y="395" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">2. Secluded Coastal Outpost</text>
             </g>
 
             <g class="map-marker" onclick="selectMapMarker(2)" style="cursor:pointer;">
-                <circle cx="560" cy="160" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
-                <text x="585" y="165" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">3. Gomatha Meadow</text>
+                <circle cx="560" cy="180" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
+                <text x="585" y="185" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">3. Gomatha Pastures & Chicken Farm</text>
             </g>
 
             <g class="map-marker" onclick="selectMapMarker(3)" style="cursor:pointer;">
-                <circle cx="480" cy="360" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
-                <text x="505" y="365" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">4. Ashley's Rocket Arsenal</text>
+                <circle cx="500" cy="270" r="14" fill="#e53935" stroke="#fff" stroke-width="3"/>
+                <text x="525" y="275" fill="#fbc02d" font-weight="800" font-size="14" font-family="Outfit">4. Ashley's Secluded Outpost</text>
             </g>
         </svg>
     `;
@@ -1250,24 +1094,24 @@ function renderInteractiveMap() {
 function selectMapMarker(index) {
     const locations = [
         {
-            name: "Ooru Council Sanctuary & Summit",
-            desc: "The sacred ancestral heart of the Pathanamthitta Tribe where Anandhu Moopan burned the Raja's surrender edict.",
-            actLink: 0
-        },
-        {
-            name: "Western Teak River Ford",
-            desc: "Where Vinayak Thevalli Raja's heavy infantry first crossed into the sovereign hills.",
+            name: "Sacred Boundary Stone Deep in the Forest",
+            desc: "Where Portuguese rogue trader Alen Das arranged a midnight peace treaty meeting, only to lure Anandhu Moopan into an elite marksmen ambush.",
             actLink: 1
         },
         {
-            name: "Sacred Gomatha Meadow",
-            desc: "The lush highland pastures protected by Adrin the Cow and the cattle sentinels.",
+            name: "Secluded Coastal Outpost",
+            desc: "Where Sheik Aslam A Salam lured blackmailer Alen Das with rumors of wine and women, executing him as payment for Moopan's famine cucumbers and brinjals.",
+            actLink: 2
+        },
+        {
+            name: "Gomatha Pastures & Former Chicken Farm",
+            desc: "The sacred pastures where Adrin was mourned by Sooraj Santhosh and Hari, built on the looted remains of Midhun Money's mass-production chicken farm.",
             actLink: 3
         },
         {
-            name: "Ashley Allen's Forest Rocket Arsenal",
-            desc: "The secret workshop where male scientist Ashley Allen designed and launched the timber rockets.",
-            actLink: 5
+            name: "Ashley's Secluded Forest Rocket Outpost",
+            desc: "Where scientist Ashley built timber rocket batteries, and where shadow assassin Nabeel and ronin samurai Habeeb Ikachi murdered him for his master blueprints.",
+            actLink: 9
         }
     ];
 
@@ -1289,21 +1133,21 @@ function renderChronologicalTimeline() {
     if (!track) return;
 
     const timelineSteps = [
-        { num: "01", title: "Anandhu's Oath", desc: "Moopan swears to protect Pathanamthitta's trees." },
-        { num: "02", title: "Thevally Invasion", desc: "Vinayak Thevalli Raja crosses the river ford." },
-        { num: "03", title: "Aslam Unites", desc: "Guerrilla blademaster Aslam joins Moopan in the mists." },
-        { num: "04", title: "Gomatha Alliance", desc: "Adrin the cow and the cattle herd pledge defense." },
-        { num: "05", title: "Envoy Defied", desc: "Moopan publicly burns the royal surrender edict." },
-        { num: "06", title: "Ashley's Rockets", desc: "Male scientist Ashley Allen launches iron-clad timber rockets." },
-        { num: "07", title: "Beast Charge", desc: "Mountain elephants trample the royal artillery train." },
-        { num: "08", title: "Silver Clash", desc: "Aslam defeats General Das of the Silver Vanguard." },
-        { num: "09", title: "Sovereign Victory", desc: "Pathanamthitta celebrates total freedom on the summit." },
-        { num: "10", title: "Samurai Shadows", desc: "Shadow Shogun Kage plots an obsidian katana revenge." }
+        { num: "PROLOGUE", title: "The Sovereign Forest", desc: "Anandhu Moopan defends Pathanamthitta against Vinayak Thevalli Raja." },
+        { num: "ACT I", title: "Serpent in the Sanctuary", desc: "Alen Das deceives Moopan at the Sacred Boundary Stone ambush." },
+        { num: "ACT II", title: "The Serpent's Ransom", desc: "Aslam executes blackmailer Alen Das for Moopan's cucumbers and brinjals." },
+        { num: "ACT III", title: "Fury of the Frontier", desc: "Adrin the cow is killed; Sooraj and Hari mobilize Gomatha vigilantes." },
+        { num: "ACT IV", title: "Fatal Miscalculation", desc: "Envoy Sidharth Seeju tells an offensive joke and is instantly cut down." },
+        { num: "ACT V", title: "Timber Rockets & Tragic Legend", desc: "Ashley deploys timber rockets; Alen Baiju is stomped by his own elephant." },
+        { num: "ACT VI", title: "The Royal Coalition", desc: "King Adith and Dictator Niranjan form a massive imperial phalanx." },
+        { num: "ACT VII", title: "Das Army & Silver Giant", desc: "Midhun Money and 7-foot Francis avenge Alen Das and the looted chicken farm." },
+        { num: "ACT VIII", title: "Apocalypse of the Frontier", desc: "Sooraj dies of grief; Hari kills Francis and Midhun; Aslam forces King Adith's surrender." },
+        { num: "POST-CREDIT", title: "Embers of New Conquest", desc: "Assassin Nabeel and samurai Habeeb Ikachi execute Ashley and steal rocket blueprints." }
     ];
 
     track.innerHTML = timelineSteps.map((s, i) => `
         <div class="timeline-card" onclick="jumpToAct(${i})">
-            <span class="step-num">STAGE ${s.num}</span>
+            <span class="step-num">${s.num}</span>
             <h5>${s.title}</h5>
             <p>${s.desc}</p>
         </div>
