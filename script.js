@@ -106,66 +106,45 @@ function closeAuthModal() {
 }
 
 function firebaseSignInWithGoogle() {
-    if (firebaseAuth && typeof firebase.auth.GoogleAuthProvider !== 'undefined') {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebaseAuth.signInWithPopup(provider)
-            .then((result) => {
-                const user = result.user;
-                currentAuthUser = {
-                    displayName: user.displayName || "Manga Reader",
-                    email: user.email || "reader@user.com",
-                    uid: user.uid
-                };
-                localStorage.setItem("manga_auth_user", JSON.stringify(currentAuthUser));
-                updateAuthUI();
-                closeAuthModal();
-            })
-            .catch((err) => {
-                console.warn("OAuth domain fallback:", err);
-                const defaultName = prompt("Enter your display name to continue:", "Ashley Allen");
-                if (defaultName) {
-                    currentAuthUser = {
-                        displayName: defaultName.trim(),
-                        email: "user@manga.co",
-                        uid: "user_" + Date.now()
-                    };
-                    localStorage.setItem("manga_auth_user", JSON.stringify(currentAuthUser));
-                    updateAuthUI();
-                    closeAuthModal();
-                }
-            });
+    // Google OAuth requires a valid Firebase project API key & authorised domain.
+    // We fall through to the username flow which works offline & without secrets.
+    const nameInput = document.getElementById("auth-input-name");
+    if (nameInput && nameInput.value.trim()) {
+        // If user already typed a name, just submit it
+        signInWithUsername(nameInput.value.trim());
     } else {
-        const defaultName = prompt("Enter your name to sign in:", "Ashley Allen");
-        if (defaultName) {
-            currentAuthUser = {
-                displayName: defaultName.trim(),
-                email: "user@manga.co",
-                uid: "user_" + Date.now()
-            };
-            localStorage.setItem("manga_auth_user", JSON.stringify(currentAuthUser));
-            updateAuthUI();
-            closeAuthModal();
+        // Focus the name field and show a helpful hint
+        if (nameInput) {
+            nameInput.focus();
+            nameInput.placeholder = "Enter your name to sign in...";
+        }
+        const hint = document.getElementById("google-signin-hint");
+        if (hint) {
+            hint.textContent = "Type your name above and press Continue — or use a Firebase project with a valid API key to enable real Google login.";
+            hint.style.display = "block";
         }
     }
+}
+
+function signInWithUsername(name) {
+    if (!name) return;
+    currentAuthUser = {
+        displayName: name,
+        email: "user@manga.co",
+        uid: "user_" + Date.now()
+    };
+    localStorage.setItem("manga_auth_user", JSON.stringify(currentAuthUser));
+    updateAuthUI();
+    closeAuthModal();
 }
 
 function handleInstantAuthSubmit(e) {
     e.preventDefault();
     const nameInput = document.getElementById("auth-input-name");
     if (!nameInput) return;
-
     const nameVal = nameInput.value.trim();
     if (!nameVal) return;
-
-    currentAuthUser = {
-        displayName: nameVal,
-        email: "user@manga.co",
-        uid: "user_" + Date.now()
-    };
-
-    localStorage.setItem("manga_auth_user", JSON.stringify(currentAuthUser));
-    updateAuthUI();
-    closeAuthModal();
+    signInWithUsername(nameVal);
 }
 
 // 3. UNIVERSAL COMIC STICKER & REACTION BADGE GALLERY (100% UNIVERSALLY SUPPORTED)
@@ -305,6 +284,22 @@ function startCommentsFeedListener() {
     }
 }
 
+// Utility: convert timestamp to relative time string
+function getRelativeTime(tsMs) {
+    if (!tsMs) return 'Recently';
+    const diff = Date.now() - tsMs;
+    const sec = Math.floor(diff / 1000);
+    if (sec < 60) return 'Just now';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min} minute${min === 1 ? '' : 's'} ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
+    const day = Math.floor(hr / 24);
+    if (day < 7) return `${day} day${day === 1 ? '' : 's'} ago`;
+    const date = new Date(tsMs);
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 function postComment() {
     const textInput = document.getElementById("comment-text-input");
     const customUrlInput = document.getElementById("custom-gif-url-input");
@@ -314,15 +309,18 @@ function postComment() {
     let finalUrl = customUrlInput ? customUrlInput.value.trim() : "";
     if (!textVal && !selectedStickerCode && !finalUrl) return;
 
-    let authorName = currentAuthUser ? currentAuthUser.displayName : "Ashley Allen";
+    // Require sign-in to comment
+    if (!currentAuthUser) {
+        openAuthModal();
+        return;
+    }
 
     const now = new Date();
     const newComment = {
-        author: authorName,
+        author: currentAuthUser.displayName,
         text: textVal,
         stickerCode: selectedStickerCode || "",
         customUrl: finalUrl || "",
-        timeAgo: "Just now",
         timestampMs: now.getTime()
     };
 
@@ -341,12 +339,15 @@ function postComment() {
         });
     }
 
+    // Reset compose box
     textInput.value = "";
     removeSelectedGif();
     if (customUrlInput) {
         customUrlInput.value = "";
         customUrlInput.classList.add("hidden");
     }
+    const drawer = document.getElementById("gif-picker-drawer");
+    if (drawer) drawer.classList.add("hidden");
     updateCommentButtonState();
 }
 
@@ -371,30 +372,37 @@ function renderCommentsFeed(commentsList) {
 
     if (!commentsList || commentsList.length === 0) {
         stream.innerHTML = `
-            <div style="text-align:center; padding:2rem; color:var(--paper-muted); font-size:0.95rem;">
-                No comments yet. Be the first to comment!
+            <div class="comments-empty-state">
+                <span style="font-size:2rem;">💬</span>
+                <p>No comments yet. Be the first to share your thoughts!</p>
             </div>
         `;
         return;
     }
 
-    stream.innerHTML = commentsList.map(item => {
+    // Avatar colour palette — cycle through for variety
+    const avatarColors = ['#3b82f6','#8b5cf6','#ef4444','#10b981','#f59e0b','#ec4899','#14b8a6','#f97316'];
+
+    stream.innerHTML = commentsList.map((item, idx) => {
         const initial = (item.author || "U").charAt(0).toUpperCase();
+        const avatarColor = avatarColors[idx % avatarColors.length];
+        const timeStr = getRelativeTime(item.timestampMs);
+        const isLast = idx === commentsList.length - 1;
         return `
-            <div class="comment-item-card">
+            <div class="comment-item-card${isLast ? ' comment-item-last' : ''}">
                 <div class="comment-avatar-col">
-                    <div class="comment-avatar-circle">${initial}</div>
+                    <div class="comment-avatar-circle" style="background:${avatarColor};">${initial}</div>
                 </div>
                 <div class="comment-content-col">
                     <div class="comment-meta-row">
                         <span class="comment-author-name">${escapeHtml(item.author || 'User')}</span>
-                        <span class="comment-time">${item.timeAgo || 'Recently'}</span>
+                        <span class="comment-time">${timeStr}</span>
                     </div>
                     ${item.text ? `<div class="comment-body-text">${escapeHtml(item.text)}</div>` : ''}
                     ${item.stickerCode ? getStickerBadgeHtml(item.stickerCode) : ''}
                     ${item.customUrl ? `
                         <div class="comment-gif-wrap">
-                            <img src="${escapeHtml(item.customUrl)}" alt="User attachment" class="comment-gif-img" loading="lazy">
+                            <img src="${escapeHtml(item.customUrl)}" alt="User reaction" class="comment-gif-img" loading="lazy">
                         </div>
                     ` : ''}
                 </div>
@@ -866,7 +874,8 @@ const CHARACTERS_DATABASE = [
         faction: "tribal",
         factionLabel: "Pathanamthitta Tribe",
         title: "Ooru Moopan • Apex Chieftain",
-        desc: "The formidable, revered leader of the Great Pathanamthitta Tribe. A leader of unyielding honor fiercely dedicated to protecting his people's ancestral lands and forest autonomy.",
+        portrait: "assets/cover.jpg",
+        desc: "The formidable, revered leader of the Great Pathanamthitta Tribe. A leader of unyielding honor fiercely dedicated to protecting his people's ancestral lands and forest autonomy. For generations, his people held the uncharted borderland hills between Kollam and Pathanamthitta. He was lured into a fatal midnight ambush at the Sacred Boundary Stone by Portuguese trader Alen Das, who mapped his tribe's hidden supply lines while posing as a rogue merchant. Despite his capture, Moopan's honor and memory inspired Sheik Aslam to rebel and ultimately reclaim the tribal forests.",
         stats: { honor: "100", leadership: "100", resilience: "98" }
     },
     {
@@ -874,7 +883,8 @@ const CHARACTERS_DATABASE = [
         faction: "royal",
         factionLabel: "Thevally Royalty",
         title: "Ambitious Feudal Conqueror",
-        desc: "An ambitious feudal ruler of the prominent royal lineage of Thevally who sought to expand his kingdom and monopolize the timber and spice routes.",
+        portrait: "assets/standoff.jpg",
+        desc: "An ambitious feudal ruler of the prominent royal lineage of Thevally who sought to expand his kingdom by monopolizing the borderland's lucrative timber and spice routes. His heavy infantry was repelled by Moopan's tribal warriors who knew the rugged terrain. Desperate, he hired Portuguese rogue trader Alen Das to betray the tribe from within. After Alen Das turned blackmailer, the Raja assigned Sheik Aslam to execute him — a fatal miscalculation, as Aslam ultimately led the rebel counter-offensive. Executed by Aslam at the war's end for his historical crimes against the tribe.",
         stats: { ambition: "98", power: "95", cruelty: "92" }
     },
     {
@@ -882,7 +892,8 @@ const CHARACTERS_DATABASE = [
         faction: "mercenary",
         factionLabel: "Portuguese Rogue Trader",
         title: "Ambitious Trader & Deceitful Blackmailer",
-        desc: "An intelligent Portuguese trader driven by vice, luxury, and self-interest. Used systematic deception to lure Moopan into an ambush, then blackmailed the Raja for gold.",
+        portrait: "assets/ambush.jpg",
+        desc: "An intelligent, deeply unscrupulous Portuguese trader driven entirely by vice, luxury, and self-interest — a notorious womanizer with zero loyalty to any crown. He proposed a strategy of asymmetric warfare: destroying the tribe from within through systematic deception. He brought foreign medicines, shared false intel, and mapped the tribe's hidden supply lines while earning the trust of elders. He then lured Anandhu Moopan into a midnight ambush at the Sacred Boundary Stone. After the Raja's victory, Alen turned blackmailer, extorting gold from the very king he served — until Sheik Aslam lured him to his death using his own lustful vices against him. His many illegitimate sons later formed the fearsome Das Army.",
         stats: { deception: "100", greed: "100", tactics: "95" }
     },
     {
@@ -890,7 +901,8 @@ const CHARACTERS_DATABASE = [
         faction: "tribal",
         factionLabel: "Loyal Commander & Rebel Blademaster",
         title: "Avenger of Honor • Defender of Kin",
-        desc: "A fierce warrior who remembered Anandhu Moopan saving his kin with carts of cucumbers and brinjals during a famine. Lured and executed blackmailer Alen Das, later leading the rebel counter-offensive.",
+        portrait: "assets/aslam.jpg",
+        desc: "A fierce warrior and loyal commander of the Raja's forces who harbored a profound secret gratitude. Years prior, during a severe famine that struck the garrison, Anandhu Moopan had saved Aslam's kin with massive carts of cucumbers and brinjals from the hill farms. Ordered to execute blackmailer Alen Das, Aslam used the trader's own lustful nature against him — leaking rumors of wine and women at a coastal outpost to lure him into a trap. In Das's final moments, Aslam made clear the execution was payment for Moopan's cucumbers and brinjals. He later led the decisive rebel counter-offensive, defeated Dictator Niranjan's iron phalanx, and forced King Adith to sign the treaty returning the forests to Moopan's tribe.",
         stats: { swordsmanship: "100", loyalty: "100", gratitude: "100" }
     },
     {
@@ -898,7 +910,8 @@ const CHARACTERS_DATABASE = [
         faction: "gomatha",
         factionLabel: "Gomatha Association",
         title: "Passionate Cattle Farmer",
-        desc: "A passionate cattle farmer who loved his cow Adrin. When Adrin was killed in the crossfire of war, Sooraj vowed vengeance and rallied the Gomatha Association.",
+        portrait: "assets/gomatha.jpg",
+        desc: "A passionate cattle farmer whose beloved cow Adrin was caught in the crossfire of a chaotic skirmish between royal forces and tribal warriors, and tragically killed. Enraged and refusing to accept her death as mere collateral damage of war, Sooraj vowed vengeance and sought out Hari, leader of the Gomatha Association. He witnessed the ultimate sacrilege during the final battle — his own rebel allies accidentally roasting a stray cow over a cookfire. The intense mental torment shattered his spirit, causing his heart to fail on the battlefield. He collapsed and died of grief, never seeing the tribal victory he helped ignite.",
         stats: { devotion: "99", grief: "98", agrarian: "95" }
     },
     {
@@ -906,7 +919,8 @@ const CHARACTERS_DATABASE = [
         faction: "gomatha",
         factionLabel: "Sacred Cattle Deity",
         title: "The Beloved Cow of Sooraj Santhosh",
-        desc: "The beloved cow of farmer Sooraj Santhosh, revered as a living deity by Hari and the Gomatha Association. Her tragic death in battle ignited a multi-front agrarian blood-feud.",
+        portrait: "assets/elephant.jpg",
+        desc: "The beloved cow of farmer Sooraj Santhosh and a living deity to Hari and the Gomatha Association. Adrin was caught in the crossfire of a chaotic battlefield skirmish and tragically killed — an act of collateral damage that became the match that lit a powder keg. Her death mobilized Hari's heavily armed vigilante vanguard of cattle protectors, transformed a political conflict into a multi-front agrarian war fueled by spiritual blood-feuds, and ultimately broke Sooraj Santhosh's heart and will to live during the final apocalyptic battle.",
         stats: { divinity: "100", innocence: "100", reverence: "100" }
     },
     {
@@ -914,7 +928,8 @@ const CHARACTERS_DATABASE = [
         faction: "gomatha",
         factionLabel: "Gomatha Association",
         title: "Spiritual Leader of the Cattle Protectors",
-        desc: "The influential leader of the Gomatha Association who viewed Adrin as a living deity. Led a heavily armed vigilante vanguard, ultimately sacrificing his life to slay Midhun Money and the silver giant.",
+        portrait: "assets/gomatha.jpg",
+        desc: "The influential, ideologically fervent leader of the regional Gomatha Association. To Hari, the cow was not property — she was a living deity. After Adrin's death, Hari mobilized a heavily armed vigilante vanguard of cattle protectors and marched into the combat zone, completely disrupting the tactical chess match between all factions and turning the war into a spiritual blood-feud. In the final apocalyptic battle, he fell into unhinged fury after Sooraj's death, led a suicidal charge against Midhun Money's Grand Opposition, survived Francis the silver giant's onslaught, and sacrificed his life to eliminate Midhun Money — shattering the Das Army at the cost of his own.",
         stats: { zeal: "100", combat: "96", vengeance: "99" }
     },
     {
@@ -922,7 +937,8 @@ const CHARACTERS_DATABASE = [
         faction: "royal",
         factionLabel: "Neutral Council Diplomat",
         title: "Eccentric Envoy of Unorthodox Diplomacy",
-        desc: "An envoy from a regional neutral council who foolishly attempted to defuse a high-stakes standoff with an offensive joke about Adrin's death, resulting in his immediate demise.",
+        portrait: "assets/standoff.jpg",
+        desc: "A diplomat from a regional neutral council, known for an eccentric personality and highly unorthodox communication style. Sidharth foolishly believed the intense atmosphere of an active war zone could be defused with a light, humorous touch rather than rigid political treaties. He arranged a high-stakes standoff at a cleared junction in the forest between Sheik Aslam's veterans and Hari's enraged vanguard, and stepped into the dead space between both armies to broker peace. He then attempted to break the ice with an incredibly poorly timed, tone-deaf, and deeply offensive joke about the death of Adrin the cow. He was cut down instantly before the words had even finished leaving his mouth.",
         stats: { humor: "10", tact: "5", diplomacy: "20" }
     },
     {
@@ -930,7 +946,8 @@ const CHARACTERS_DATABASE = [
         faction: "tribal",
         factionLabel: "Rebel Scientist & Inventor",
         title: "Eccentric Master of Timber Rockets",
-        desc: "A brilliant, wildly eccentric regional scientist who engineered volatile artillery weapons constructed entirely out of reinforced timber and chemical ash propellants.",
+        portrait: "assets/ashley_male.jpg",
+        desc: "A brilliant but wildly eccentric regional scientist who had been working in complete isolation on the fringes of the forest. Lacking conventional metals, Ashley successfully engineered a volatile, destructive artillery weapon constructed entirely from reinforced timber and localized chemical ash propellants — the legendary timber rocket. Aligning himself with Sheik Aslam, he brought his rocket batteries to the front line, delivering devastating fire support against the monarchy. His rockets cracked the armor of Francis the silver giant, enabling Hari to bring him down. After the war, he retired to a secluded valley outpost — only to be executed by assassin Nabeel and ronin Habeeb Ikachi, who stole his master rocket schematics for global conquest.",
         stats: { intellect: "100", innovation: "100", artillery: "98" }
     },
     {
@@ -938,7 +955,8 @@ const CHARACTERS_DATABASE = [
         faction: "royal",
         factionLabel: "Thevally Vanguard",
         title: "Legendary Short-Statured Champion",
-        desc: "Famed across southern principalities for lethal speed and tactical genius. Because of his remarkably short height, a war elephant's mahout could not see him, and he was accidentally stomped to death.",
+        portrait: "assets/elephant.jpg",
+        desc: "Famed across the southern principalities as a warrior of lethal speed and unmatched tactical genius, Alen Baiju was summoned by Vinayak Thevalli Raja as his ultimate weapon to counter Ashley's devastating timber rockets. He rapidly intercepted Ashley's rocket pads, shifting the tide of battle back to the crown. However, in the thick smoke and chaos of the frontline, tragedy struck in the most bizarre fashion: standing low to the ground amidst the fog of war, Alen Baiju stepped directly behind one of the royal army's massive war elephants. Due to his remarkably short stature, the mahout high above could not see him. The colossal beast took a heavy backward step and stomped the legendary warrior to death instantly, throwing the royal ranks into absolute disarray.",
         stats: { speed: "99", tactics: "97", stature: "25" }
     },
     {
@@ -946,7 +964,8 @@ const CHARACTERS_DATABASE = [
         faction: "royal",
         factionLabel: "Supreme Sovereign of Travancore",
         title: "His Great Holy Highness",
-        desc: "The supreme sovereign of Travancore who brought central treasury wealth and standing regiments to save the realm, eventually signing the binding treaty returning tribal forest rights.",
+        portrait: "assets/elephant.jpg",
+        desc: "The supreme sovereign of Travancore, His Great Holy Highness King Adith entered the battlefield when royal lines began fracturing under Ashley's timber rocket fire. Recognizing that the fall of the Thevalli territory would destabilize the entire realm, he brought the immense wealth of the central state treasury and elite standing regiments, heralded by the thunderous blare of conch shells from the southern horizons. Marching alongside his most ruthless military commander Dictator Niranjan, King Adith established the massive royal coalition that completely halted rebel momentum — only to be cornered and forced to surrender by Sheik Aslam after the coalition's collapse, signing a binding treaty that returned the sovereign rights of the Pathanamthitta forests to Moopan's tribe.",
         stats: { sovereignty: "100", wealth: "100", authority: "98" }
     },
     {
@@ -954,7 +973,8 @@ const CHARACTERS_DATABASE = [
         faction: "royal",
         factionLabel: "Travancore Imperial Guard",
         title: "Iron-Fisted Commander of the Phalanx",
-        desc: "A notorious military dictator known for iron-fisted rule. Deployed flawless phalanx formations with heavy artillery and specialized anti-siege shields against Ashley's rockets.",
+        portrait: "assets/standoff.jpg",
+        desc: "A notorious, iron-fisted military dictator with a zero-tolerance policy for insurrections, Dictator Niranjan commanded King Adith's most terrifying war machine. His forces moved in flawless phalanx formations, equipped with heavy artillery and specialized anti-siege shields designed specifically to withstand experimental projectiles like Ashley's timber rockets. Together with King Adith, he established the massive royal coalition that halted rebel momentum. In the final apocalyptic battle, his iron phalanx clashed with the Das Army mercenaries while Sheik Aslam's brilliant counter-offensive outmaneuvered and ultimately collapsed his impeccable formation, ending the royal coalition's grip on the borderlands.",
         stats: { discipline: "100", defense: "99", cruelty: "96" }
     },
     {
@@ -962,7 +982,8 @@ const CHARACTERS_DATABASE = [
         faction: "mercenary",
         factionLabel: "Das Army Brotherhood",
         title: "Offshore Wealth Warlord",
-        desc: "An illegitimate son of Alen Das who united his brothers into the Das Army. Harbored a bitter vendetta against Hari for looting his mass-production chicken farm.",
+        portrait: "assets/giant.jpg",
+        desc: "A cold, hyper-powerful figure and the undisputed leader of the Das Army — a global mercenary syndicate formed by the illegitimate sons of Alen Das, united by blood and greed for the lucrative spice trade routes. Midhun's arrival on the battlefield was fueled by a bitter personal vendetta: years prior, Hari and the Gomatha Association had aggressively looted and dismantled his mass-production chicken farm to claim the land for sacred pastures. He brought the terrifying 7-foot silver giant Francis as his personal enforcer. He was ultimately eliminated in the final battle by Hari, who led a suicidal charge through the wreckage of Francis's defeat, sacrificing his own life to end Midhun Money and shatter the Das Army entirely.",
         stats: { wealth: "99", vendetta: "98", power: "97" }
     },
     {
@@ -970,7 +991,8 @@ const CHARACTERS_DATABASE = [
         faction: "mercenary",
         factionLabel: "Das Army Brotherhood",
         title: "7-Foot-Tall Silver Giant",
-        desc: "A terrifying 7-foot-tall juggernaut armored in custom-forged plate-mail that effortlessly deflected blades. Cracked by a timber rocket and brought down by Hari.",
+        portrait: "assets/giant.jpg",
+        desc: "A terrifying, 7-foot-tall juggernaut armored in custom-forged silver plate-mail that effortlessly deflected standard blades. Midhun Money's personal enforcer, Francis was unleashed directly onto Hari's Gomatha vanguard in the final apocalyptic battle, trampling the cattle protectors' front lines. He appeared unstoppable until Ashley redirected a heavy timber rocket, striking the silver giant square in the chest. The volatile blast cracked the formidable armor wide open, allowing Hari to finally close in and bring the towering giant down — at the cost of Hari's own life shortly after, as he pushed through to eliminate Midhun Money.",
         stats: { height: "100", armor: "99", strength: "99" }
     },
     {
@@ -978,7 +1000,8 @@ const CHARACTERS_DATABASE = [
         faction: "shadow",
         factionLabel: "Shadow Assassins",
         title: "Silent Assassin of the Midnight Blade",
-        desc: "A silent, shadow-bound assassin wrapped in midnight-black garments who wields a dual-pronged thrusting blade. Executed scientist Ashley to steal the rocket schematics.",
+        portrait: "assets/assassins.jpg",
+        desc: "A silent, shadow-bound assassin wrapped in midnight-black garments and wielding a dual-pronged thrusting blade. After the great war's smoke settled, Nabeel stepped from the darkness of a doorway into scientist Ashley's secluded valley outpost. Representing a shadowy power seeking the ultimate weapon of long-range devastation, Nabeel declared that while the war for the forest was over, a grander conquest was just beginning. He executed Ashley with a blinding, silent strike and then reached down to scoop up the master schematics of the legendary timber rocket technology. He and Habeeb Ikachi departed into the vast unprotected horizon beyond Travancore's borders, armed for global conquest.",
         stats: { stealth: "100", speed: "99", lethality: "99" }
     },
     {
@@ -986,7 +1009,8 @@ const CHARACTERS_DATABASE = [
         faction: "shadow",
         factionLabel: "Shadow Assassins",
         title: "Terrifying Ronin Samurai",
-        desc: "A terrifying ronin samurai clad in battle-scarred iron armor wielding a razor-sharp katana. Partnered with Nabeel to seize the timber rocket technology for global conquest.",
+        portrait: "assets/assassins.jpg",
+        desc: "A terrifying ronin samurai clad in dark, battle-scarred iron armor with a razor-sharp katana at his hip. He appeared simultaneously with Nabeel at the exits of Ashley's secluded outpost in the post-credit scene, blocking all escape routes. While Nabeel executed the killing blow from the shadows, Habeeb Ikachi's katana left its scabbard in the same breath — a flawless, lightning-fast crescent slash that sealed Ashley's fate. He then calmly wiped the blood from his blade, sheathed it, and gave a cold, ruthless nod to Nabeel. Together, armed with the stolen rocket blueprints, they turned their backs on Pathanamthitta and set out on a terrifying new journey of global conquest.",
         stats: { swordsmanship: "100", ruthlessness: "99", conquest: "100" }
     }
 ];
@@ -996,12 +1020,17 @@ function renderCharacterCodex() {
     if (!grid) return;
     grid.innerHTML = CHARACTERS_DATABASE.map((c, i) => `
         <div class="character-card" onclick="openCharacterModal(${i})">
+            <div class="char-card-portrait-wrap">
+                <img src="${c.portrait || 'assets/cover.jpg'}" alt="${c.name}" class="char-card-portrait" loading="lazy">
+                <div class="char-card-portrait-overlay">
+                    <span class="char-faction-badge">${c.factionLabel}</span>
+                </div>
+            </div>
             <div class="char-card-header">
                 <h4 class="char-name">${c.name}</h4>
-                <span class="char-faction-badge">${c.factionLabel}</span>
+                <span class="char-title-sub">${c.title}</span>
             </div>
             <div class="char-card-body">
-                <span class="char-title-sub">${c.title}</span>
                 <p class="char-description">${c.desc}</p>
                 <div class="char-stats-bar">
                     ${Object.entries(c.stats).map(([k, v]) => `
@@ -1037,22 +1066,30 @@ function openCharacterModal(index) {
     if (!modal || !content) return;
 
     content.innerHTML = `
-        <div class="toc-header">
-            <h3>${c.name}</h3>
-            <button class="close-modal-btn" onclick="document.getElementById('char-modal-overlay').classList.add('hidden')">&times;</button>
+        <div style="position:relative; height:240px; overflow:hidden; border-radius:14px 14px 0 0; flex-shrink:0;">
+            <img src="${c.portrait || 'assets/cover.jpg'}" alt="${c.name}" style="width:100%; height:100%; object-fit:cover; display:block;">
+            <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(13,15,18,0.97) 100%);"></div>
+            <div style="position:absolute; bottom:1.2rem; left:1.6rem; right:3.5rem;">
+                <span style="background:var(--crimson-blood); color:white; font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:4px; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.5rem; display:inline-block;">${c.factionLabel}</span>
+                <div style="font-family:var(--font-manga); font-size:2rem; color:var(--paper-white); line-height:1; letter-spacing:1px;">${c.name}</div>
+            </div>
+            <button onclick="document.getElementById('char-modal-overlay').classList.add('hidden')" style="position:absolute; top:0.8rem; right:0.8rem; background:rgba(13,15,18,0.75); border:1px solid rgba(255,255,255,0.15); color:white; font-size:1.1rem; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);">&times;</button>
         </div>
-        <p class="toc-subtitle" style="color:var(--gold-royal); font-weight:700;">${c.title} • [${c.factionLabel}]</p>
-        <p style="font-size:0.95rem; line-height:1.6; color:var(--paper-cream); margin-bottom:1.5rem;">${c.desc}</p>
-        <div style="display:flex; gap:0.8rem; flex-wrap:wrap; border-top:1px solid var(--ink-border); padding-top:1rem;">
-            ${Object.entries(c.stats).map(([k, v]) => `
-                <div style="background:var(--ink-panel); border:1px solid var(--gold-royal); padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.85rem;">
-                    ${k.toUpperCase()}: <span style="color:var(--gold-royal);">${v} / 100</span>
-                </div>
-            `).join('')}
+        <div style="padding:1.4rem 1.8rem 1.8rem 1.8rem; overflow-y:auto;">
+            <p style="color:var(--gold-royal); font-weight:700; font-size:0.88rem; margin-bottom:1rem; letter-spacing:0.5px;">${c.title}</p>
+            <p style="font-size:0.95rem; line-height:1.75; color:var(--paper-cream); margin-bottom:1.5rem;">${c.desc}</p>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; border-top:1px solid var(--ink-border); padding-top:1rem;">
+                ${Object.entries(c.stats).map(([k, v]) => `
+                    <div style="background:var(--ink-panel); border:1px solid rgba(251,192,45,0.4); padding:5px 11px; border-radius:8px; font-weight:700; font-size:0.8rem;">
+                        ${k.toUpperCase()}: <span style="color:var(--gold-royal);">${v}</span>
+                    </div>
+                `).join('')}
+            </div>
         </div>
     `;
     modal.classList.remove("hidden");
 }
+
 
 // 11. MAP & TIMELINE (100% TRUE TO AUTHORITATIVE STORYLANDS)
 function renderInteractiveMap() {
